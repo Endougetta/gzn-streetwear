@@ -32,7 +32,10 @@ export const photo = (product: Product, view: string, width = 1120) =>
 
 export function cardViews(product: Product) {
   const pick = (ids: string[]) => ids.find(id => product.images.some(img => img.id === id))
-  const front = pick(['lose_front', 'model_front', 'gefaltet_front']) ?? product.images[0].id
+  const frontOrder = product.category === 't-shirts'
+    ? ['gefaltet_front', 'lose_front', 'model_front']
+    : ['lose_front', 'model_front', 'gefaltet_front']
+  const front = pick(frontOrder) ?? product.images[0].id
   const back = pick(['lose_back', 'model_back', 'closeup_back'])
   return { front, back }
 }

@@ -24,9 +24,6 @@ function Photo({ product, view, alt, eager = false, sizes: displaySizes = '(min-
 }
 
 function Home() {
-  const heroProducts = ['hoodies-shadow-schwarz', 'hoodies-not-that-deep-bordeaux', 'hoodies-keep-building-blau']
-    .map(id => productById.get(id)).filter(product => product !== undefined)
-
   return <>
     <section className="hero" aria-labelledby="hero-title">
       <div className="hero-copy">
@@ -39,7 +36,13 @@ function Home() {
         </div>
       </div>
       <div className="hero-visual">
-        {heroProducts.map(product => <Photo key={product.id} product={product} view="model_front" alt={product.name + ' am Model'} eager sizes="(min-width: 850px) 21vw, 33vw" />)}
+        <img
+          src="/campaign/first-drop.jpg"
+          width={1536}
+          height={1024}
+          alt="Imad in drei Posen mit weißen Sneakern: im weißen Monogram-Shirt mit schwarzer Hose, im bordeauxfarbenen Not That Deep Set und im blauen Keep Building Set mit sichtbarem Rückenprint."
+          fetchPriority="high"
+        />
       </div>
     </section>
     {categories.map(category => <section key={category.id} className="collection" id={category.id}>
@@ -48,8 +51,10 @@ function Home() {
         const { front, back } = cardViews(product)
         return <Link key={product.id} to={'/produkt/' + product.id} className="card">
           <div className="card-image">
-            <Photo product={product} view={front} alt="" />
-            {back && <div className="card-back"><Photo product={product} view={back} alt="" /></div>}
+            <div className="card-photos">
+              <Photo product={product} view={front} alt="" />
+              {back && <div className="card-back"><Photo product={product} view={back} alt="" /></div>}
+            </div>
             <span className="card-arrow" aria-hidden="true">↗</span>
           </div>
           <div className="product-meta"><h3>{product.name}</h3><span>{product.color}</span></div>
