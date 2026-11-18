@@ -8,13 +8,13 @@ Die Bildfläche nutzt zunächst die drei vorhandenen Model-Aufnahmen zu Shadow, 
 
 ## Kampagnenmotiv
 
-Drei Figuren in einem gemeinsamen Ganzkörpermotiv rechts neben der Headline. Als erster Aufbau sitzt die hockende Figur leicht vorn. Joseph und Jotaro stehen nah beieinander dahinter. Die Kleidung und die Schuhe bleiben im Bild erkennbar.
+Imad ist dreimal im selben Ganzkörpermotiv rechts neben der Headline zu sehen. Joseph Joestar und Jotaro aus JoJo dienen ausschließlich als Posenreferenzen. Im ersten Aufbau hockt ein Imad leicht vorn. Die beiden stehenden Imads stehen dicht beieinander dahinter. Kleidung und Schuhe bleiben im Bild erkennbar.
 
 | Figur | Pose | Outfit |
 |---|---|---|
-| Imad | Hockt im Dreiviertelprofil. Ein Fuß steht vorne, der andere hinten. Die Arme hängen locker nach unten. Der Blick bleibt ausdruckslos. | GZN Monogram T-Shirt und schwarze GZN Monogram Hose |
-| Joseph Joestar | Breiter Stand wie in der Vorlage, eine offene Hand vor dem Gesicht, der andere Arm seitlich abgesenkt. | Not That Deep Hoodie in Bordeaux |
-| Jotaro | Steht dicht bei Joseph. Körper leicht gedreht, mit der markanten, zur Kamera gerichteten Zeigegeste aus der Vorlage. | Grüner GZN College Sweater |
+| Imad in der Hocke | Hockt im Dreiviertelprofil. Ein Fuß steht vorne, der andere hinten. Die Arme hängen locker nach unten. Der Blick bleibt ausdruckslos. | GZN Monogram T-Shirt und schwarze GZN Monogram Hose |
+| Imad in Josephs Pose | Breiter Stand wie in der Vorlage, eine offene Hand vor dem Gesicht, der andere Arm seitlich abgesenkt. | Not That Deep Hoodie in Bordeaux |
+| Imad in Jotaros Pose | Steht dicht neben Imad in Josephs Pose. Körper leicht gedreht, mit der markanten, zur Kamera gerichteten Zeigegeste aus der Vorlage. | Grüner GZN College Sweater |
 
 Die Vorlagen legen die Posen fest. Position, Abstand und Bildausschnitt werden gemeinsam beurteilt, sobald das Motiv erstellt wird.
 
