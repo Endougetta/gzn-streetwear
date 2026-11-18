@@ -1,5 +1,7 @@
 import { expect, test } from '@playwright/test'
 import { createHmac, randomUUID } from 'node:crypto'
+import { resolve } from 'node:path'
+import { pathToFileURL } from 'node:url'
 
 test('catalog, gallery, cart persistence and waitlist form', async ({ page }) => {
   await page.goto('/')
@@ -95,4 +97,22 @@ test('campaign image loads and product cards zoom before the rear image fades in
   await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth)).toBe(390)
   await expect.poll(() => campaign.evaluate(image => (image as HTMLImageElement).naturalWidth)).toBe(1536)
   await page.screenshot({ path: testInfo.outputPath('gzn-mobile.png') })
+})
+
+test('standalone review opens from disk and completes a test reservation offline', async ({ page, context }) => {
+  await context.setOffline(true)
+  await page.goto(pathToFileURL(resolve('review/GZN_Shop_Vorschau.html')).href)
+  await expect(page.getByText('Vormerkung im Testmodus', { exact: false })).toBeVisible()
+  await expect(page.locator('.card')).toHaveCount(17)
+  await expect.poll(() => page.locator('.hero-visual img').evaluate(image => (image as HTMLImageElement).naturalWidth)).toBe(1536)
+
+  await page.getByRole('link', { name: 'Shadow Schwarz', exact: true }).first().click()
+  const image = page.getByRole('region', { name: 'Produktgalerie' }).getByAltText('Shadow · Vorderseite')
+  await expect.poll(() => image.evaluate(element => (element as HTMLImageElement).naturalWidth)).toBeGreaterThan(0)
+  await page.getByRole('radio', { name: 'M', exact: true }).check()
+  await page.getByRole('button', { name: 'Zur Auswahl hinzufügen' }).click()
+  await page.getByRole('button', { name: 'Zur Vormerkung' }).click()
+  await page.getByLabel('E-Mail-Adresse').fill('vorschau@example.com')
+  await page.getByRole('button', { name: 'Vormerkung absenden' }).click()
+  await expect(page.getByRole('dialog').getByRole('status')).toContainText('Testvormerkung abgeschlossen')
 })

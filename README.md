@@ -21,6 +21,12 @@ npm test
 
 Eine lokale Testinstanz kann nach dem Build auch manuell mit `node scripts/test-server.mjs` gestartet werden. Sie verwendet Port 8788 und eine temporäre Datenbank.
 
+## Klickbare Vorschau
+
+GitHub Actions stellt `GZN_Shop_Vorschau.html` im Artefakt `gzn-klickbare-vorschau` bereit. ZIP entpacken und die HTML-Datei im Browser öffnen. Die Datei enthält die Bilder und unterstützt Produktgalerien, Auswahl und eine Testvormerkung ohne Versand.
+
+Für einen eigenen Export nach dem Build `npm run preview:html` ausführen. Das Ergebnis liegt unter `review/`. Der Cloudflare-Build nutzt weiterhin `dist/`.
+
 ## Aufbau
 
 | Pfad | Inhalt |

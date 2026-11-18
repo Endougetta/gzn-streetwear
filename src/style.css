@@ -144,3 +144,5 @@ select, input[type=email] { border: 1px solid #9ba5ab; background: white; color:
   .card:hover .card-photos { transform: none; }
   .card:is(:hover, :focus-visible) .card-back { transition-delay: 0s; }
 }
+
+.review-note { margin: 0; padding: 8px var(--gutter); background: var(--selection); color: var(--ink); font-size: 13px; }

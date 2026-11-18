@@ -27,8 +27,13 @@ export function isLine(value: unknown): value is Line {
     && line.quantity >= 1 && line.quantity <= maxQuantity
 }
 
+const reviewAssets = (globalThis as typeof globalThis & { gznReviewAssets?: Record<string, string> }).gznReviewAssets
+
+export const isReviewPreview = Boolean(reviewAssets)
+export const assetUrl = (path: string) => reviewAssets?.[path] ?? path
+
 export const photo = (product: Product, view: string, width = 1120) =>
-  '/products/' + product.id + '/' + view + '-' + width + '.webp'
+  assetUrl('/products/' + product.id + '/' + view + '-' + width + '.webp')
 
 export function cardViews(product: Product) {
   const pick = (ids: string[]) => ids.find(id => product.images.some(img => img.id === id))

@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from 'react'
 import type { FormEvent } from 'react'
 import { createRoot } from 'react-dom/client'
-import { BrowserRouter, Link, Route, Routes, useLocation, useParams } from 'react-router-dom'
-import { cardViews, categories, isLine, lineKey, maxLines, maxQuantity, photo, productById, products, sizes } from './catalog'
+import { BrowserRouter, Link, MemoryRouter, Route, Routes, useLocation, useParams } from 'react-router-dom'
+import { assetUrl, cardViews, categories, isLine, isReviewPreview, lineKey, maxLines, maxQuantity, photo, productById, products, sizes } from './catalog'
 import type { Line, Product } from './catalog'
 import './style.css'
 
@@ -20,7 +20,7 @@ function restoreCart(): Line[] {
 
 function Photo({ product, view, alt, eager = false, sizes: displaySizes = '(min-width: 850px) 33vw, 50vw' }:
 { product: Product; view: string; alt: string; eager?: boolean; sizes?: string }) {
-  return <img src={photo(product, view)} srcSet={photo(product, view, 480) + ' 480w, ' + photo(product, view) + ' 1120w'} sizes={displaySizes} alt={alt} loading={eager ? 'eager' : 'lazy'} decoding="async" />
+  return <img src={photo(product, view)} srcSet={isReviewPreview ? undefined : photo(product, view, 480) + ' 480w, ' + photo(product, view) + ' 1120w'} sizes={displaySizes} alt={alt} loading={eager ? 'eager' : 'lazy'} decoding="async" />
 }
 
 function Home() {
@@ -37,7 +37,7 @@ function Home() {
       </div>
       <div className="hero-visual">
         <img
-          src="/campaign/first-drop.jpg"
+          src={assetUrl('/campaign/first-drop.jpg')}
           width={1536}
           height={1024}
           alt="Imad in drei Posen mit weißen Sneakern: im weißen Monogram-Shirt mit schwarzer Hose, im bordeauxfarbenen Not That Deep Set und im blauen Keep Building Set mit sichtbarem Rückenprint."
@@ -137,6 +137,12 @@ function Cart({ lines, update, dialog }: { lines: Line[]; update: (line: Line) =
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
     if (pending || !lines.length) return
+    if (isReviewPreview) {
+      lines.forEach(line => update({ ...line, quantity: 0 }))
+      setPhase('done')
+      setEmail('')
+      return
+    }
     setPending(true)
     setMessage('')
     const signature = JSON.stringify([email.trim().toLowerCase(), lines])
@@ -165,7 +171,7 @@ function Cart({ lines, update, dialog }: { lines: Line[]; update: (line: Line) =
   return <dialog ref={dialog} className="drawer" aria-labelledby="cart-title" onClose={() => { if (!pending) { setPhase('selection'); setMessage('') } }}
     onCancel={event => { if (pending) event.preventDefault() }}>
     <header><h2 id="cart-title">Deine Auswahl</h2><button type="button" aria-label="Auswahl schließen" onClick={() => dialog.current?.close()} disabled={pending}>×</button></header>
-    {phase === 'done' ? <div className="drawer-content" role="status"><h3>Schau in dein Postfach.</h3><p>Bestätige deine E-Mail-Adresse über den Link, den wir dir geschickt haben.</p><button className="button full" onClick={() => dialog.current?.close()}>Weiterstöbern</button></div>
+    {phase === 'done' ? <div className="drawer-content" role="status"><h3>{isReviewPreview ? 'Testvormerkung abgeschlossen' : 'Schau in dein Postfach.'}</h3><p>{isReviewPreview ? 'In dieser Vorschau werden keine Daten gesendet.' : 'Bestätige deine E-Mail-Adresse über den Link, den wir dir geschickt haben.'}</p><button className="button full" onClick={() => dialog.current?.close()}>Weiterstöbern</button></div>
       : <div className="drawer-content">
         {lines.length ? <ul className="cart-lines">{lines.map(line => {
           const product = productById.get(line.productId)!
@@ -265,7 +271,9 @@ function App() {
       <nav aria-label="Hauptnavigation"><Link to="/#hoodies">Kollektion</Link></nav>
       <button className="bag" type="button" onClick={() => cart.current?.showModal()}>Auswahl <span>{count}</span></button>
     </header>
-    <main id="main" ref={main} tabIndex={-1}><Routes>
+    <main id="main" ref={main} tabIndex={-1}>
+      {isReviewPreview && <p className="review-note">Shop-Vorschau · Vormerkung im Testmodus</p>}
+      <Routes>
       <Route path="/" element={<Home />} />
       <Route path="/produkt/:id" element={<ProductPage add={add} />} />
       <Route path="/bestaetigen" element={<Confirm />} />
@@ -281,4 +289,5 @@ function App() {
     <Cart lines={lines} update={update} dialog={cart} />
   </>
 }
-createRoot(document.getElementById('root')!).render(<BrowserRouter><App /></BrowserRouter>)
+const Router = isReviewPreview ? MemoryRouter : BrowserRouter
+createRoot(document.getElementById('root')!).render(<Router><App /></Router>)

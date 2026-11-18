@@ -27,3 +27,9 @@ jobs:
           name: gzn-shop-preview
           path: test-results/**/gzn-*.png
           if-no-files-found: error
+      - name: Upload interactive shop preview
+        uses: actions/upload-artifact@v4
+        with:
+          name: gzn-klickbare-vorschau
+          path: review/GZN_Shop_Vorschau.html
+          if-no-files-found: error
