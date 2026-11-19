@@ -29,7 +29,8 @@ export function isLine(value: unknown): value is Line {
 
 const reviewAssets = (globalThis as typeof globalThis & { gznReviewAssets?: Record<string, string> }).gznReviewAssets
 
-export const isReviewPreview = Boolean(reviewAssets)
+export const isOfflineReview = Boolean(reviewAssets)
+export const isReviewPreview = isOfflineReview || import.meta.env.VITE_HOSTED_REVIEW === '1'
 export const assetUrl = (path: string) => reviewAssets?.[path] ?? path
 
 export const photo = (product: Product, view: string, width = 1120) =>

@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import type { FormEvent } from 'react'
 import { createRoot } from 'react-dom/client'
 import { BrowserRouter, Link, MemoryRouter, Route, Routes, useLocation, useParams } from 'react-router-dom'
-import { assetUrl, cardViews, categories, isLine, isReviewPreview, lineKey, maxLines, maxQuantity, photo, productById, products, sizes } from './catalog'
+import { assetUrl, cardViews, categories, isLine, isOfflineReview, isReviewPreview, lineKey, maxLines, maxQuantity, photo, productById, products, sizes } from './catalog'
 import type { Line, Product } from './catalog'
 import './style.css'
 
@@ -20,7 +20,7 @@ function restoreCart(): Line[] {
 
 function Photo({ product, view, alt, eager = false, sizes: displaySizes = '(min-width: 850px) 33vw, 50vw' }:
 { product: Product; view: string; alt: string; eager?: boolean; sizes?: string }) {
-  return <img src={photo(product, view)} srcSet={isReviewPreview ? undefined : photo(product, view, 480) + ' 480w, ' + photo(product, view) + ' 1120w'} sizes={displaySizes} alt={alt} loading={eager ? 'eager' : 'lazy'} decoding="async" />
+  return <img src={photo(product, view)} srcSet={isOfflineReview ? undefined : photo(product, view, 480) + ' 480w, ' + photo(product, view) + ' 1120w'} sizes={displaySizes} alt={alt} loading={eager ? 'eager' : 'lazy'} decoding="async" />
 }
 
 function Home() {
@@ -289,5 +289,5 @@ function App() {
     <Cart lines={lines} update={update} dialog={cart} />
   </>
 }
-const Router = isReviewPreview ? MemoryRouter : BrowserRouter
+const Router = isOfflineReview ? MemoryRouter : BrowserRouter
 createRoot(document.getElementById('root')!).render(<Router><App /></Router>)
