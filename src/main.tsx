@@ -2,9 +2,11 @@ import { useEffect, useRef, useState } from 'react'
 import type { FormEvent } from 'react'
 import { createRoot } from 'react-dom/client'
 import { BrowserRouter, Link, MemoryRouter, Route, Routes, useLocation, useParams } from 'react-router-dom'
-import { assetUrl, cardViews, categories, isLine, isOfflineReview, isReviewPreview, lineKey, maxLines, maxQuantity, photo, productById, products, sizes } from './catalog'
+import { assetUrl, cardViews, categories, isLine, isOfflineReview, lineKey, maxLines, maxQuantity, photo, productById, products, sizes } from './catalog'
 import type { Line, Product } from './catalog'
 import './style.css'
+
+const isReviewPreview = isOfflineReview || import.meta.env.VITE_HOSTED_REVIEW === '1'
 
 const supportUrl = import.meta.env.VITE_SUPPORT_URL
 const cartKey = 'gzn-selection-v1'
