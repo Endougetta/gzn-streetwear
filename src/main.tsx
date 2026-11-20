@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import type { FormEvent } from 'react'
 import { createRoot } from 'react-dom/client'
 import { BrowserRouter, Link, MemoryRouter, Route, Routes, useLocation, useParams } from 'react-router-dom'
-import { assetUrl, cardViews, categories, featuredHoodie, galleryViews, isLine, isOfflineReview, lineKey, maxLines, maxQuantity, photo, productById, products, sizes } from './catalog'
+import { assetUrl, cardViews, categories, galleryViews, isLine, isOfflineReview, lineKey, maxLines, maxQuantity, photo, productById, products, sizes } from './catalog'
 import type { Line, Product } from './catalog'
 import './style.css'
 
@@ -25,6 +25,73 @@ function Photo({ product, view, alt, eager = false, sizes: displaySizes = '(min-
   return <img src={photo(product, view)} srcSet={isOfflineReview ? undefined : photo(product, view, 480) + ' 480w, ' + photo(product, view) + ' 1120w'} sizes={displaySizes} alt={alt} loading={eager ? 'eager' : 'lazy'} decoding="async" />
 }
 
+type CampaignLook = { name: string; image: string; productId: string }
+
+const campaignLooks: CampaignLook[] = [
+  { name: 'Keep Building · Blau', image: '/campaign/keep-building-walk.jpg', productId: 'hoodies-keep-building-blau' },
+  { name: 'Shadow · Schwarz', image: '/campaign/shadow-walk.jpg', productId: 'hoodies-shadow-schwarz' },
+  { name: 'Not That Deep · Bordeaux', image: '/campaign/not-that-deep-walk.jpg', productId: 'hoodies-not-that-deep-bordeaux' },
+]
+
+function CampaignCarousel() {
+  const [{ current, previous }, setLook] = useState({ current: 0, previous: -1 })
+  const [playing, setPlaying] = useState(() => !window.matchMedia('(prefers-reduced-motion: reduce)').matches)
+  const activeLook = campaignLooks[current]
+
+  useEffect(() => {
+    const preference = window.matchMedia('(prefers-reduced-motion: reduce)')
+    const pauseForReducedMotion = (event: MediaQueryListEvent) => { if (event.matches) setPlaying(false) }
+    preference.addEventListener('change', pauseForReducedMotion)
+    return () => preference.removeEventListener('change', pauseForReducedMotion)
+  }, [])
+
+  useEffect(() => {
+    if (!playing) return
+    let timer: number | undefined
+    function schedule() {
+      window.clearTimeout(timer)
+      if (!document.hidden) {
+        timer = window.setTimeout(() => {
+          setLook(({ current }) => ({ current: (current + 1) % campaignLooks.length, previous: current }))
+        }, 5200)
+      }
+    }
+    schedule()
+    document.addEventListener('visibilitychange', schedule)
+    return () => {
+      window.clearTimeout(timer)
+      document.removeEventListener('visibilitychange', schedule)
+    }
+  }, [current, playing])
+
+  return <div className="hero-visual" aria-label="GZN Kampagnenlooks">
+    <Link className="hero-image-link" to={'/produkt/' + activeLook.productId} aria-label={activeLook.name + ' ansehen'}>
+      {campaignLooks.map((look, index) => <img
+        key={look.image}
+        className={index === current ? 'hero-slide hero-slide--active' : index === previous ? 'hero-slide hero-slide--previous' : 'hero-slide'}
+        src={assetUrl(look.image)}
+        alt=""
+        width={1536}
+        height={1024}
+        fetchPriority={index === 0 ? 'high' : 'low'}
+      />)}
+    </Link>
+    <div className="hero-look-controls" aria-label="Kampagnenbilder wechseln">
+      {campaignLooks.map((look, index) => <button key={look.image} type="button"
+        aria-label={look.name}
+        aria-pressed={index === current}
+        onClick={() => {
+          setPlaying(false)
+          if (index !== current) setLook({ current: index, previous: current })
+        }}>
+        <span aria-hidden="true" />
+      </button>)}
+      <button type="button" aria-label={playing ? 'Kampagnenwechsel pausieren' : 'Kampagnenwechsel starten'}
+        onClick={() => setPlaying(value => !value)}>{playing ? 'Ⅱ' : '▷'}</button>
+    </div>
+  </div>
+}
+
 function Home() {
   return <>
     <section className="hero" aria-labelledby="hero-title">
@@ -37,15 +104,7 @@ function Home() {
           {supportUrl && <a className="button button-outline" href={supportUrl} target="_blank" rel="noopener noreferrer">Support GZN ↗</a>}
         </div>
       </div>
-      <Link className="hero-visual" to={'/produkt/' + featuredHoodie.id}>
-        <img
-          src={assetUrl('/campaign/keep-building-walk.jpg')}
-          alt="Model im blauen Keep Building Set, von hinten im Gehen"
-          width={1536}
-          height={1024}
-          fetchPriority="high"
-        />
-      </Link>
+      <CampaignCarousel />
     </section>
     {categories.map(category => <section key={category.id} className="collection" id={category.id}>
       <div className="collection-heading"><h2>{category.label}</h2></div>
