@@ -10,6 +10,7 @@ export const categories = [
 export const products = data
 export type Product = (typeof products)[number]
 export const productById = new Map(products.map(product => [product.id, product]))
+export const featuredHoodie = productById.get('hoodies-keep-building-blau')!
 // Vor der Freischaltung mit den verfügbaren Größen abgleichen.
 export const sizes = ['XS', 'S', 'M', 'L', 'XL', 'XXL']
 export const maxQuantity = 10
@@ -43,4 +44,9 @@ export function cardViews(product: Product) {
   const front = pick(frontOrder) ?? product.images[0].id
   const back = pick(['lose_back', 'model_back', 'closeup_back'])
   return { front, back }
+}
+
+export function galleryViews(product: Product) {
+  const model = product.images.filter(image => image.id === 'model_front' || image.id === 'model_back')
+  return [...model, ...product.images.filter(image => !model.includes(image))]
 }

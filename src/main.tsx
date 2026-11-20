@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import type { FormEvent } from 'react'
 import { createRoot } from 'react-dom/client'
 import { BrowserRouter, Link, MemoryRouter, Route, Routes, useLocation, useParams } from 'react-router-dom'
-import { assetUrl, cardViews, categories, isLine, isOfflineReview, lineKey, maxLines, maxQuantity, photo, productById, products, sizes } from './catalog'
+import { cardViews, categories, featuredHoodie, galleryViews, isLine, isOfflineReview, lineKey, maxLines, maxQuantity, photo, productById, products, sizes } from './catalog'
 import type { Line, Product } from './catalog'
 import './style.css'
 
@@ -37,25 +37,22 @@ function Home() {
           {supportUrl && <a className="button button-outline" href={supportUrl} target="_blank" rel="noopener noreferrer">Support GZN ↗</a>}
         </div>
       </div>
-      <div className="hero-visual">
-        <img
-          src={assetUrl('/campaign/first-drop.jpg')}
-          width={1536}
-          height={1024}
-          alt="Imad in drei Posen mit weißen Sneakern: im weißen Monogram-Shirt mit schwarzer Hose, im bordeauxfarbenen Not That Deep Set und im blauen Keep Building Set mit sichtbarem Rückenprint."
-          fetchPriority="high"
-        />
-      </div>
+      <Link className="hero-visual" to={'/produkt/' + featuredHoodie.id}>
+        <Photo product={featuredHoodie} view="lose_back" alt="Keep Building Hoodie · Rückseite" eager sizes="(min-width: 850px) 50vw, 92vw" />
+      </Link>
     </section>
     {categories.map(category => <section key={category.id} className="collection" id={category.id}>
       <div className="collection-heading"><h2>{category.label}</h2></div>
       <div className="products">{products.filter(product => product.category === category.id).map(product => {
         const { front, back } = cardViews(product)
-        return <Link key={product.id} to={'/produkt/' + product.id} className="card">
+        return <Link key={product.id} to={'/produkt/' + product.id} className={front === 'gefaltet_front' ? 'card card--folded' : 'card'}>
           <div className="card-image">
             <div className="card-photos">
               <Photo product={product} view={front} alt="" />
-              {back && <div className="card-back"><Photo product={product} view={back} alt="" /></div>}
+              {back && <div className="card-back">
+                <Photo product={product} view={back} alt="" />
+                <span className="card-view-label" aria-hidden="true">Rückansicht</span>
+              </div>}
             </div>
             <span className="card-arrow" aria-hidden="true">↗</span>
           </div>
@@ -77,8 +74,37 @@ function ProductDetail({ product, add }: { product: Product; add: (line: Line) =
   const [quantity, setQuantity] = useState(1)
   const [selected, setSelected] = useState(0)
   const [error, setError] = useState('')
-  const view = product.images[selected]
-  const move = (offset: number) => setSelected(index => (index + offset + product.images.length) % product.images.length)
+  const images = galleryViews(product)
+  const count = images.length
+  const view = images[selected]
+  const [playing, setPlaying] = useState(() => !window.matchMedia('(prefers-reduced-motion: reduce)').matches)
+
+  useEffect(() => {
+    const preference = window.matchMedia('(prefers-reduced-motion: reduce)')
+    const stopForReducedMotion = (event: MediaQueryListEvent) => { if (event.matches) setPlaying(false) }
+    preference.addEventListener('change', stopForReducedMotion)
+    return () => preference.removeEventListener('change', stopForReducedMotion)
+  }, [])
+
+  useEffect(() => {
+    if (!playing || count < 2) return
+    let timer: number | undefined
+    function schedule() {
+      window.clearTimeout(timer)
+      if (!document.hidden) timer = window.setTimeout(() => setSelected(index => (index + 1) % count), 5200)
+    }
+    schedule()
+    document.addEventListener('visibilitychange', schedule)
+    return () => {
+      window.clearTimeout(timer)
+      document.removeEventListener('visibilitychange', schedule)
+    }
+  }, [count, playing, selected])
+
+  function move(offset: number) {
+    setPlaying(false)
+    setSelected(index => (index + offset + count) % count)
+  }
 
   function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
@@ -96,14 +122,17 @@ function ProductDetail({ product, add }: { product: Product; add: (line: Line) =
         }
       }}>
         <div className="gallery-stage">
-          <Photo product={product} view={view.id} alt={product.name + ' · ' + view.label} eager sizes="(min-width: 850px) 54vw, 94vw" />
+          <div className="gallery-frame" key={view.id}>
+            <Photo product={product} view={view.id} alt={product.name + ' · ' + view.label} eager sizes="(min-width: 850px) 54vw, 94vw" />
+          </div>
           <div className="gallery-controls">
             <button type="button" aria-label="Vorheriges Bild" onClick={() => move(-1)}>←</button>
-            <span aria-live="polite">{selected + 1} / {product.images.length}</span>
+            <span aria-live={playing ? 'off' : 'polite'}>{selected + 1} / {count}</span>
             <button type="button" aria-label="Nächstes Bild" onClick={() => move(1)}>→</button>
+            <button type="button" aria-label={playing ? 'Bildwechsel pausieren' : 'Bildwechsel starten'} onClick={() => setPlaying(value => !value)}>{playing ? 'Ⅱ' : '▷'}</button>
           </div>
         </div>
-        <div className="thumbnails">{product.images.map((image, index) => <button type="button" key={image.id} aria-label={image.label} aria-pressed={index === selected} onClick={() => setSelected(index)}>
+        <div className="thumbnails">{images.map((image, index) => <button type="button" key={image.id} aria-label={image.label} aria-pressed={index === selected} onClick={() => { setPlaying(false); setSelected(index) }}>
           <Photo product={product} view={image.id} alt="" sizes="80px" />
         </button>)}</div>
       </section>

@@ -56,23 +56,28 @@ img { display: block; width: 100%; }
 .button:disabled { opacity: .62; cursor: wait; }
 .button-outline { background: transparent; color: var(--ink); }
 .full { width: 100%; }
-.hero-visual { min-width: 0; padding: 28px 0; }
-.hero-visual img { height: auto; aspect-ratio: 3 / 2; }
+.hero-visual { display: block; min-width: 0; margin: 28px 0; overflow: hidden; background: var(--paper); }
+.hero-visual img { width: 100%; height: auto; aspect-ratio: 6 / 5; object-fit: cover; object-position: 50% 54%; transition: transform 550ms ease; }
+@media (hover: hover) { .hero-visual:hover img { transform: scale(1.025); } }
 .collection { max-width: 1760px; margin: 0 auto; padding: 34px var(--gutter) 56px; }
 .collection + .collection { border-top: 1px solid var(--line); }
 .collection-heading { display: flex; align-items: baseline; justify-content: space-between; padding-bottom: 17px; }
 .collection-heading h2 { margin: 0; font-size: clamp(30px, 5vw, 60px); line-height: 1; letter-spacing: -.07em; text-transform: uppercase; }
 .products { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px 12px; }
-.card { text-decoration: none; min-width: 0; }
+.card { --rear-delay: 3s; text-decoration: none; min-width: 0; }
+#hosen .card { --rear-delay: 2.5s; }
+#t-shirts .card { --rear-delay: 2.5s; }
 .card-image { aspect-ratio: 4 / 5; background: var(--paper); position: relative; overflow: hidden; }
 .card-photos { position: absolute; inset: 0; transition: transform 260ms ease-out; }
 .card-photos img { width: 100%; height: 100%; object-fit: cover; }
-.card-back { position: absolute; inset: 0; opacity: 0; transition: opacity 220ms ease; }
+.card--folded .card-photos > img { object-fit: contain; }
+.card-back { position: absolute; inset: 0; opacity: 0; transition: opacity 280ms ease; }
+.card-view-label { position: absolute; left: 10px; bottom: 9px; padding: 5px 9px; color: var(--ink); background: white; font-size: 11px; }
 @media (hover: hover) and (pointer: fine) {
   .card:hover .card-photos { transform: scale(1.06); }
-  .card:hover .card-back { opacity: 1; transition-delay: 180ms; }
+  .card:hover .card-back { opacity: 1; transition-delay: var(--rear-delay); }
 }
-.card:focus-visible .card-back { opacity: 1; transition-delay: 180ms; }
+.card:focus-visible .card-back { opacity: 1; transition-delay: var(--rear-delay); }
 .card-arrow { position: absolute; right: 8px; bottom: 8px; background: white; min-width: 28px; line-height: 28px; text-align: center; }
 .product-meta { padding: 12px 0; }
 .product-meta h3 { margin: 0 0 4px; font-size: clamp(13px, 2vw, 18px); }
@@ -88,6 +93,14 @@ img { display: block; width: 100%; }
 }
 .gallery-stage { position: relative; background: var(--paper); }
 .gallery-stage img { aspect-ratio: 4 / 5; max-height: 78svh; object-fit: contain; }
+.gallery-frame { animation: gallery-arrive 360ms ease-out both; }
+@keyframes gallery-arrive {
+  from { opacity: .35; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.thumbnails button { transition: border-color 180ms ease, opacity 180ms ease; }
+.thumbnails button:not([aria-pressed=true]) { opacity: .72; }
+.thumbnails button:hover { opacity: 1; }
 .gallery-controls { position: absolute; bottom: 14px; right: 14px; display: flex; align-items: center; gap: 10px; background: white; font-size: 12px; }
 .gallery-controls button, .drawer header button { border: 0; background: white; min-width: 44px; min-height: 44px; font-size: 19px; }
 .gallery-controls button:hover, .drawer header button:hover { background: var(--selection); }
@@ -129,7 +142,7 @@ select, input[type=email] { border: 1px solid #9ba5ab; background: white; color:
   .hero { min-height: 0; grid-template-columns: 1fr; gap: 0; }
   .hero-copy { padding: 32px 0 24px; }
   .hero h1 { font-size: clamp(63px, 13vw, 104px); }
-  .hero-visual { padding: 0 0 24px; }
+  .hero-visual { margin: 0 0 24px; }
   .detail { grid-template-columns: 1fr; gap: 15px; }
   .product-form { position: static; }
 }
@@ -140,7 +153,9 @@ select, input[type=email] { border: 1px solid #9ba5ab; background: white; color:
 }
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
-  .card-photos, .card-back { transition: none; }
+  .card-photos, .card-back, .hero-visual img, .thumbnails button { transition: none; }
+  .hero-visual:hover img { transform: none; }
+  .gallery-frame { animation: none; }
   .card:hover .card-photos { transform: none; }
   .card:is(:hover, :focus-visible) .card-back { transition-delay: 0s; }
 }
