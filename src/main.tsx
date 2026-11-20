@@ -101,7 +101,7 @@ function Home() {
         <p className="intro">The first drop starts here.</p>
         <div className="hero-actions">
           <a className="button" href="#hoodies">Zu den Hoodies <span aria-hidden="true">↓</span></a>
-          {supportUrl && <a className="button button-outline" href={supportUrl} target="_blank" rel="noopener noreferrer">GZN freiwillig unterstützen ↗</a>}
+          <a className="button button-outline" href="#funding">Den ersten Drop unterstützen</a>
         </div>
       </div>
       <CampaignCarousel />
@@ -125,6 +125,12 @@ function Home() {
         </Link>
       })}</div>
     </section>)}
+    <section className="funding" id="funding" aria-labelledby="funding-title">
+      <h2 id="funding-title">Der erste Druck kommt von mir.</h2>
+      <div><p>Ich bin Imad. Zum Start mache ich bei GZN alles selbst. Gerade will ich sehen, wie meine Motive auf echtem Stoff wirken. Mit deiner Unterstützung kann ich Musterteile besorgen und die ersten Testmotive drucken.</p>
+      <p>Wenn genug zusammenkommt, suche ich einen Hersteller für den nächsten Schritt. Du kannst dir jedes Teil unabhängig davon frei vormerken.</p>
+      {supportUrl ? <a className="button" href={supportUrl} target="_blank" rel="noopener noreferrer">Testdrucke über PayPal unterstützen ↗</a> : <p>Der PayPal-Link folgt.</p>}</div>
+    </section>
   </>
 }
 
