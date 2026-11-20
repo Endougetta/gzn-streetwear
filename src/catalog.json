@@ -180,6 +180,10 @@
       {
         "id": "model_back",
         "label": "Rückseite am Model"
+      },
+      {
+        "id": "gefaltet_front",
+        "label": "Gefaltete Ansicht"
       }
     ]
   },

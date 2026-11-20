@@ -1,5 +1,7 @@
 import { expect, test } from '@playwright/test'
 import { createHmac, randomUUID } from 'node:crypto'
+import { resolve } from 'node:path'
+import { pathToFileURL } from 'node:url'
 
 test('catalog, gallery, cart persistence and waitlist form', async ({ page }) => {
   await page.goto('/')
@@ -8,9 +10,9 @@ test('catalog, gallery, cart persistence and waitlist form', async ({ page }) =>
   await page.getByRole('link', { name: 'Shadow Schwarz', exact: true }).first().click()
   await expect(page.getByRole('heading', { level: 1, name: 'Shadow' })).toBeVisible()
   const gallery = page.getByRole('region', { name: 'Produktgalerie' })
-  await expect(gallery.getByAltText('Shadow · Vorderseite')).toBeVisible()
+  await expect(gallery.getByAltText('Shadow · Vorderseite am Model')).toBeVisible()
   await gallery.getByRole('button', { name: 'Nächstes Bild' }).press('ArrowRight')
-  await expect(gallery.getByAltText('Shadow · Rückseite')).toBeVisible()
+  await expect(gallery.getByAltText('Shadow · Rückseite am Model')).toBeVisible()
   await page.getByRole('radio', { name: 'L', exact: true }).check()
   await page.getByLabel('Anzahl').selectOption('2')
   await page.getByRole('button', { name: 'Zur Auswahl hinzufügen' }).click()
@@ -72,9 +74,11 @@ test('mobile layout has no horizontal overflow and product without flat images s
 test('campaign image loads and product cards zoom before the rear image fades in', async ({ page }, testInfo) => {
   await page.setViewportSize({ width: 1440, height: 900 })
   await page.goto('/')
-  const campaign = page.locator('.hero-visual img')
+  const campaign = page.locator('.hero-slide--active')
   await expect(campaign).toHaveCount(1)
-  await expect.poll(() => campaign.evaluate(image => (image as HTMLImageElement).naturalWidth)).toBe(1536)
+  await expect(campaign).toHaveAttribute('src', '/campaign/keep-building-walk.jpg')
+  await expect(page.locator('#t-shirts .card--folded')).toHaveCount(3)
+  await expect.poll(() => campaign.evaluate(image => (image as HTMLImageElement).naturalWidth)).toBeGreaterThan(0)
   await expect(campaign).toBeInViewport()
   await page.screenshot({ path: testInfo.outputPath('gzn-desktop.png') })
 
@@ -83,9 +87,14 @@ test('campaign image loads and product cards zoom before the rear image fades in
   const back = card.locator('.card-back')
   await expect(back).toHaveCSS('opacity', '0')
   await card.hover()
-  await expect(back).toHaveCSS('transition-delay', '0.18s')
+  await expect(back).toHaveCSS('transition-delay', '2s')
   await expect(front).not.toHaveCSS('transform', 'none')
+  await expect(back).toHaveCSS('opacity', '0')
   await expect(back).toHaveCSS('opacity', '1')
+  const sweater = page.locator('#sweatshirts .card').first()
+  await sweater.hover()
+  await expect(sweater.locator('.card-back')).toHaveCSS('transition-delay', '3s')
+  await card.hover()
   await page.emulateMedia({ reducedMotion: 'reduce' })
   await expect(front).toHaveCSS('transform', 'none')
   await expect(back).toHaveCSS('transition-delay', '0s')
@@ -93,6 +102,52 @@ test('campaign image loads and product cards zoom before the rear image fades in
   await page.setViewportSize({ width: 390, height: 844 })
   await page.goto('/')
   await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth)).toBe(390)
-  await expect.poll(() => campaign.evaluate(image => (image as HTMLImageElement).naturalWidth)).toBe(1536)
+  await expect.poll(() => campaign.evaluate(image => (image as HTMLImageElement).naturalWidth)).toBeGreaterThan(0)
   await page.screenshot({ path: testInfo.outputPath('gzn-mobile.png') })
+})
+
+test('standalone review opens from disk and completes a test reservation offline', async ({ page, context }) => {
+  await context.setOffline(true)
+  await page.goto(pathToFileURL(resolve('review/GZN_Shop_Vorschau.html')).href)
+  await expect(page.getByText('Vormerkung im Testmodus', { exact: false })).toBeVisible()
+  await expect(page.locator('.card')).toHaveCount(17)
+  await expect.poll(() => page.locator('.hero-slide--active').evaluate(image => (image as HTMLImageElement).naturalWidth)).toBeGreaterThan(0)
+
+  await page.getByRole('link', { name: 'Shadow Schwarz', exact: true }).first().click()
+  const image = page.getByRole('region', { name: 'Produktgalerie' }).getByAltText('Shadow · Vorderseite am Model')
+  await expect.poll(() => image.evaluate(element => (element as HTMLImageElement).naturalWidth)).toBeGreaterThan(0)
+  await page.getByRole('radio', { name: 'M', exact: true }).check()
+  await page.getByRole('button', { name: 'Zur Auswahl hinzufügen' }).click()
+  await page.getByRole('button', { name: 'Zur Vormerkung' }).click()
+  await page.getByLabel('E-Mail-Adresse').fill('vorschau@example.com')
+  await page.getByRole('button', { name: 'Vormerkung absenden' }).click()
+  await expect(page.getByRole('dialog').getByRole('status')).toContainText('Testvormerkung abgeschlossen')
+})
+
+test('hoodie gallery starts on model photos, rotates and pauses on manual selection', async ({ page }) => {
+  await page.clock.install()
+  await page.goto('/produkt/hoodies-shadow-schwarz')
+  const gallery = page.getByRole('region', { name: 'Produktgalerie' })
+  await expect(gallery.getByAltText('Shadow · Vorderseite am Model')).toBeVisible()
+  await page.clock.fastForward(5300)
+  await expect(gallery.getByAltText('Shadow · Rückseite am Model')).toBeVisible()
+  await gallery.getByRole('button', { name: 'Vorderseite am Model', exact: true }).click()
+  await page.clock.fastForward(5500)
+  await expect(gallery.getByAltText('Shadow · Vorderseite am Model')).toBeVisible()
+  await expect(gallery.getByRole('button', { name: 'Bildwechsel starten' })).toBeVisible()
+})
+
+test('hero fades between the three GZN looks and can be paused', async ({ page }) => {
+  await page.clock.install()
+  await page.goto('/')
+  const panel = page.locator('.hero-visual')
+  await expect(panel.locator('img')).toHaveCount(3)
+  await expect(panel.getByRole('link')).toHaveAccessibleName('Keep Building · Blau ansehen')
+  await page.clock.fastForward(5300)
+  await expect(panel.getByRole('link')).toHaveAccessibleName('Shadow · Schwarz ansehen')
+  await expect(panel.locator('.hero-slide--active')).toHaveCSS('animation-name', 'hero-crossfade')
+  await panel.getByRole('button', { name: 'Not That Deep · Bordeaux' }).click()
+  await page.clock.fastForward(5500)
+  await expect(panel.getByRole('link')).toHaveAccessibleName('Not That Deep · Bordeaux ansehen')
+  await expect(panel.getByRole('button', { name: 'Kampagnenwechsel starten' })).toBeVisible()
 })

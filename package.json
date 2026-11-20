@@ -3,6 +3,8 @@
   "version": "1.0.0",
   "description": "",
   "scripts": {
+    "pretest": "npm run preview:html",
+    "preview:html": "node scripts/build-review-preview.mjs",
     "test": "playwright test",
     "dev": "vite",
     "build": "tsc --noEmit && vite build",
