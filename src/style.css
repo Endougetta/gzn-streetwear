@@ -167,3 +167,28 @@ select, input[type=email] { border: 1px solid #9ba5ab; background: white; color:
 }
 
 .review-note { margin: 0; padding: 8px var(--gutter); background: var(--selection); color: var(--ink); font-size: 13px; }
+
+:root {
+  --burgundy: #742e43;
+  --burgundy-wash: #f6ecef;
+}
+.gallery-controls {
+  gap: 2px;
+  padding: 3px;
+  border: 1px solid var(--line);
+  border-radius: 28px;
+  box-shadow: 0 3px 16px #241c2214;
+}
+.gallery-controls button { border-radius: 50%; }
+.gallery-controls button:hover { background: var(--burgundy-wash); color: var(--burgundy); }
+.thumbnails [aria-pressed=true] { border-color: var(--burgundy); }
+.sizes input:checked + span { background: var(--burgundy); border-color: var(--burgundy); color: white; }
+@media (prefers-reduced-motion: no-preference) {
+  .sizes span { transition: background-color 180ms ease, color 180ms ease, border-color 180ms ease; }
+  .gallery-controls button { transition: background-color 180ms ease, transform 180ms ease; }
+  .gallery-controls button:active { transform: scale(.94); }
+  .drawer[open] { animation: drawer-enter 260ms cubic-bezier(.22, 1, .36, 1); }
+  .drawer[open]::backdrop { animation: backdrop-enter 220ms ease-out; }
+}
+@keyframes drawer-enter { from { transform: translateX(100%); } to { transform: translateX(0); } }
+@keyframes backdrop-enter { from { opacity: 0; } to { opacity: 1; } }
