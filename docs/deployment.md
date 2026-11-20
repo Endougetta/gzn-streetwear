@@ -11,14 +11,14 @@ Die Vorschau verwendet `VITE_HOSTED_REVIEW=1` und simuliert die Vormerkung im Br
 | Dienst | Zuständigkeit | Stand |
 | --- | --- | --- |
 | GitHub | Endougetta verwaltet Quellcode und Freigabe. | Repo und Vorschau-PR vorhanden. |
-| Cloudflare | GZN verwaltet Pages, Zugriffsschutz, DNS und D1. | Pages und Zugriffsschutz vorhanden. Test- und Live-D1 noch einzurichten. |
+| Cloudflare | GZN verwaltet Pages, Zugriffsschutz, DNS und D1. | Pages, Zugriffsschutz und EU-Test-D1 vorhanden. Die Live-Datenbank steht aus. |
 | Resend | GZN verwaltet den Absender, die Versanddomain und die Zustellung. | Konto und Absenderdomain noch zu bestätigen. |
 | Vormerkende | Gäste wählen Produkte aus und bestätigen ihre E-Mail-Adresse per Link. | V1 benötigt keine Kundenkonten. |
 | GZN-Team | Bestätigte Einträge abrufen und Interessenten persönlich kontaktieren. | CSV-Export vorhanden. Zuständigkeit und Zugriff vor dem Livegang festlegen. |
 
 ## Datenbank und Freigabe
 
-1. Eine getrennte Testumgebung mit Pages Functions einrichten und den Testzugriff beschränken.
+1. Die EU-Datenbank `gzn-waitlist-test` enthält die geprüfte Startmigration `0001_waitlist.sql`. Eine getrennte Testumgebung mit Pages Functions und beschränktem Testzugriff einrichten und die Datenbank dort als `DB` anbinden.
 2. Versionierte Migration und Bindings zunächst in der Testumgebung prüfen. Erst nach erfolgreichem Test Produktion bereitstellen.
 3. Separate D1-Datenbanken für Produktion und Vorschau erstellen. In `wrangler.toml` die lokale Beispiel-ID durch die echte Produktions-ID ersetzen. Für nicht geheimen Preview-Konfigurationscode folgenden Absatz mit echter Preview-ID ergänzen. Bindings sind je Umgebung zu setzen.
 
