@@ -57,16 +57,15 @@ img { display: block; width: 100%; }
 .button-outline { background: transparent; color: var(--ink); }
 .full { width: 100%; }
 .hero-visual { display: block; min-width: 0; margin: 28px 0; overflow: hidden; background: var(--paper); }
-.hero-visual img { width: 100%; height: auto; aspect-ratio: 6 / 5; object-fit: cover; object-position: 50% 54%; transition: transform 550ms ease; }
+.hero-visual img { width: 100%; height: auto; aspect-ratio: 6 / 5; object-fit: cover; object-position: center; transition: transform 550ms ease; }
 @media (hover: hover) { .hero-visual:hover img { transform: scale(1.025); } }
 .collection { max-width: 1760px; margin: 0 auto; padding: 34px var(--gutter) 56px; }
 .collection + .collection { border-top: 1px solid var(--line); }
 .collection-heading { display: flex; align-items: baseline; justify-content: space-between; padding-bottom: 17px; }
 .collection-heading h2 { margin: 0; font-size: clamp(30px, 5vw, 60px); line-height: 1; letter-spacing: -.07em; text-transform: uppercase; }
 .products { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px 12px; }
-.card { --rear-delay: 3s; text-decoration: none; min-width: 0; }
-#hosen .card { --rear-delay: 2.5s; }
-#t-shirts .card { --rear-delay: 2.5s; }
+.card { --rear-delay: 2s; text-decoration: none; min-width: 0; }
+#sweatshirts .card { --rear-delay: 3s; }
 .card-image { aspect-ratio: 4 / 5; background: var(--paper); position: relative; overflow: hidden; }
 .card-photos { position: absolute; inset: 0; transition: transform 260ms ease-out; }
 .card-photos img { width: 100%; height: 100%; object-fit: cover; }

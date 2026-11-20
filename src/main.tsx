@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import type { FormEvent } from 'react'
 import { createRoot } from 'react-dom/client'
 import { BrowserRouter, Link, MemoryRouter, Route, Routes, useLocation, useParams } from 'react-router-dom'
-import { cardViews, categories, featuredHoodie, galleryViews, isLine, isOfflineReview, lineKey, maxLines, maxQuantity, photo, productById, products, sizes } from './catalog'
+import { assetUrl, cardViews, categories, featuredHoodie, galleryViews, isLine, isOfflineReview, lineKey, maxLines, maxQuantity, photo, productById, products, sizes } from './catalog'
 import type { Line, Product } from './catalog'
 import './style.css'
 
@@ -38,7 +38,13 @@ function Home() {
         </div>
       </div>
       <Link className="hero-visual" to={'/produkt/' + featuredHoodie.id}>
-        <Photo product={featuredHoodie} view="lose_back" alt="Keep Building Hoodie · Rückseite" eager sizes="(min-width: 850px) 50vw, 92vw" />
+        <img
+          src={assetUrl('/campaign/keep-building-walk.jpg')}
+          alt="Model im blauen Keep Building Set, von hinten im Gehen"
+          width={1536}
+          height={1024}
+          fetchPriority="high"
+        />
       </Link>
     </section>
     {categories.map(category => <section key={category.id} className="collection" id={category.id}>

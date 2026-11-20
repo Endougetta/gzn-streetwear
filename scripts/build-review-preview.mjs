@@ -21,6 +21,7 @@ async function addImages(directory, mime, suffix) {
     }
   }
 }
+await addImages('campaign', 'image/jpeg', '.jpg')
 await addImages('products', 'image/webp', '-1120.webp')
 
 const script = await readFile(join(build, entry[1]), 'utf8')

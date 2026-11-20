@@ -2,8 +2,24 @@
 
 ## Geschützte Vorschau
 
-1. Den Pull Request gegen `main` prüfen und die GitHub-Actions-Checks abwarten. Das Repository ist öffentlich.
-2. Cloudflare Pages mit dem Repository verbinden, Build-Befehl `npm run build`, Ausgabe `dist`, Node.js 24, Produktionsbranch `main`. Die GitHub-App auf dieses Repository begrenzen. Vor dem ersten Inhalts-Deployment die Vorschau-URLs mit Cloudflare Access schützen. Auch die unversionierte Produktions-URL bis zum Launch separat absichern oder ausschließlich einen ausdrücklich konfigurierten Preview-Branch deployen. Die Sichtbarkeit des GitHub-Repos gilt nur für den Quellcode.
+Cloudflare Pages ist mit `Endougetta/gzn-streetwear` verbunden. `feature/review-preview` baut die [geschützte Shop-Vorschau](https://feature-review-preview.gzn-streetwear.pages.dev/) im Testmodus. Auf der Hauptadresse steht ein Platzhalter. Automatische Builds für `main` sind pausiert. Das Repository ist öffentlich.
+
+Die Vorschau verwendet `VITE_HOSTED_REVIEW=1` und simuliert die Vormerkung im Browser. Für einen integrierten Test vor dem Launch braucht es ein eigenes Deployment mit Pages Functions und Testdatenbank. Die optische Vorschau bleibt für die Designabnahme verfügbar.
+
+## Verantwortliche Konten
+
+| Dienst | Zuständigkeit | Stand |
+| --- | --- | --- |
+| GitHub | Endougetta verwaltet Quellcode und Freigabe. | Repo und Vorschau-PR vorhanden. |
+| Cloudflare | GZN verwaltet Pages, Zugriffsschutz, DNS und D1. | Pages und Zugriffsschutz vorhanden. Test- und Live-D1 noch einzurichten. |
+| Resend | GZN verwaltet den Absender, die Versanddomain und die Zustellung. | Konto und Absenderdomain noch zu bestätigen. |
+| Vormerkende | Gäste wählen Produkte aus und bestätigen ihre E-Mail-Adresse per Link. | V1 benötigt keine Kundenkonten. |
+| GZN-Team | Bestätigte Einträge abrufen und Interessenten persönlich kontaktieren. | CSV-Export vorhanden. Zuständigkeit und Zugriff vor dem Livegang festlegen. |
+
+## Datenbank und Freigabe
+
+1. Eine getrennte Testumgebung mit Pages Functions einrichten und den Testzugriff beschränken.
+2. Versionierte Migration und Bindings zunächst in der Testumgebung prüfen. Erst nach erfolgreichem Test Produktion bereitstellen.
 3. Separate D1-Datenbanken für Produktion und Vorschau erstellen. In `wrangler.toml` die lokale Beispiel-ID durch die echte Produktions-ID ersetzen. Für nicht geheimen Preview-Konfigurationscode folgenden Absatz mit echter Preview-ID ergänzen. Bindings sind je Umgebung zu setzen.
 
 ```toml
