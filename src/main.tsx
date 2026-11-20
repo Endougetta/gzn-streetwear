@@ -101,7 +101,7 @@ function Home() {
         <p className="intro">The first drop starts here.</p>
         <div className="hero-actions">
           <a className="button" href="#hoodies">Zu den Hoodies <span aria-hidden="true">↓</span></a>
-          {supportUrl && <a className="button button-outline" href={supportUrl} target="_blank" rel="noopener noreferrer">Support GZN ↗</a>}
+          {supportUrl && <a className="button button-outline" href={supportUrl} target="_blank" rel="noopener noreferrer">GZN freiwillig unterstützen ↗</a>}
         </div>
       </div>
       <CampaignCarousel />
@@ -379,7 +379,7 @@ function App() {
       <nav aria-label="Footer">
         {import.meta.env.VITE_IMPRINT_URL && <a href={import.meta.env.VITE_IMPRINT_URL}>Impressum</a>}
         {import.meta.env.VITE_PRIVACY_URL && <a href={import.meta.env.VITE_PRIVACY_URL}>Datenschutz</a>}
-        {supportUrl && <a href={supportUrl} target="_blank" rel="noopener noreferrer">Support GZN ↗</a>}
+        {supportUrl && <a href={supportUrl} target="_blank" rel="noopener noreferrer">GZN freiwillig unterstützen ↗</a>}
       </nav>
     </footer>
     <Cart lines={lines} update={update} dialog={cart} />
