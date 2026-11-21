@@ -129,7 +129,7 @@ function Home() {
       <h2 id="funding-title">Der erste Druck kommt von mir.</h2>
       <div><p>Ich bin Imad. Zum Start mache ich bei GZN alles selbst. Gerade will ich sehen, wie meine Motive auf echtem Stoff wirken. Mit deiner Unterstützung kann ich Musterteile besorgen und die ersten Testmotive drucken.</p>
       <p>Wenn genug zusammenkommt, suche ich einen Hersteller für den nächsten Schritt. Du kannst dir jedes Teil unabhängig davon frei vormerken.</p>
-      {supportUrl ? <a className="button" href={supportUrl} target="_blank" rel="noopener noreferrer">Testdrucke über PayPal unterstützen ↗</a> : <p>Der PayPal-Link folgt.</p>}</div>
+      {supportUrl ? <a className="button" href={supportUrl} target="_blank" rel="noopener noreferrer">Testdrucke auf GoFundMe unterstützen ↗</a> : <p>Der Link zur GoFundMe-Kampagne folgt.</p>}</div>
     </section>
   </>
 }
