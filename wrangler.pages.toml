@@ -1,0 +1,13 @@
+name = "gzn-streetwear"
+pages_build_output_dir = "./dist"
+compatibility_date = "2026-11-18"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "gzn-waitlist-production"
+database_id = "d731e3fd-26d6-4590-890b-fcfc71c69c59"
+migrations_dir = "migrations"
+
+[vars]
+SITE_URL = "https://gzn-streetwear.pages.dev"
+WAITLIST_ENABLED = "0"

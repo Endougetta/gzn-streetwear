@@ -1,0 +1,33 @@
+{
+  "name": "gzn-streetwear",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "pretest": "npm run preview:html",
+    "preview:html": "node scripts/build-review-preview.mjs",
+    "test": "playwright test",
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "serve": "wrangler pages dev dist"
+  },
+  "type": "module",
+  "dependencies": {
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1",
+    "react-router-dom": "^7.18.5"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^5.20261118.1",
+    "@playwright/test": "^1.65.1",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "@vitejs/plugin-react": "^6.3.0",
+    "typescript": "^7.0.2",
+    "vite": "^8.3.8",
+    "wrangler": "^4.164.0"
+  },
+  "engines": {
+    "node": ">=22.12"
+  },
+  "private": true
+}

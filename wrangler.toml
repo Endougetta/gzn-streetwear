@@ -1,0 +1,11 @@
+name = "gzn-streetwear"
+pages_build_output_dir = "./dist"
+compatibility_date = "2026-11-18"
+
+# Local configuration only. For the Git integration, replace the ID with the
+# production D1 ID and add the separate env.preview configuration from the runbook.
+[[d1_databases]]
+binding = "DB"
+database_name = "gzn-local"
+database_id = "00000000-0000-4000-8000-000000000001"
+migrations_dir = "migrations"

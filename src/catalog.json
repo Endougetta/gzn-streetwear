@@ -1,0 +1,426 @@
+[
+  {
+    "id": "hoodies-shadow-schwarz",
+    "category": "hoodies",
+    "name": "Shadow",
+    "color": "Schwarz",
+    "images": [
+      {
+        "id": "lose_front",
+        "label": "Vorderseite"
+      },
+      {
+        "id": "lose_back",
+        "label": "Rückseite"
+      },
+      {
+        "id": "model_front",
+        "label": "Vorderseite am Model"
+      },
+      {
+        "id": "model_back",
+        "label": "Rückseite am Model"
+      },
+      {
+        "id": "gefaltet_front",
+        "label": "Gefaltete Ansicht"
+      }
+    ]
+  },
+  {
+    "id": "hoodies-not-that-deep-bordeaux",
+    "category": "hoodies",
+    "name": "Not That Deep",
+    "color": "Bordeaux",
+    "images": [
+      {
+        "id": "lose_front",
+        "label": "Vorderseite"
+      },
+      {
+        "id": "lose_back",
+        "label": "Rückseite"
+      },
+      {
+        "id": "model_front",
+        "label": "Vorderseite am Model"
+      },
+      {
+        "id": "model_back",
+        "label": "Rückseite am Model"
+      },
+      {
+        "id": "gefaltet_front",
+        "label": "Gefaltete Ansicht"
+      }
+    ]
+  },
+  {
+    "id": "hoodies-keep-building-blau",
+    "category": "hoodies",
+    "name": "Keep Building",
+    "color": "Blau",
+    "images": [
+      {
+        "id": "lose_front",
+        "label": "Vorderseite"
+      },
+      {
+        "id": "lose_back",
+        "label": "Rückseite"
+      },
+      {
+        "id": "model_front",
+        "label": "Vorderseite am Model"
+      },
+      {
+        "id": "model_back",
+        "label": "Rückseite am Model"
+      },
+      {
+        "id": "gefaltet_front",
+        "label": "Gefaltete Ansicht"
+      }
+    ]
+  },
+  {
+    "id": "sweatshirts-gzn-college-gruen",
+    "category": "sweatshirts",
+    "name": "GZN College",
+    "color": "Grün",
+    "images": [
+      {
+        "id": "lose_front",
+        "label": "Vorderseite"
+      },
+      {
+        "id": "lose_back",
+        "label": "Rückseite"
+      },
+      {
+        "id": "model_front",
+        "label": "Vorderseite am Model"
+      },
+      {
+        "id": "model_back",
+        "label": "Rückseite am Model"
+      },
+      {
+        "id": "gefaltet_front",
+        "label": "Gefaltete Ansicht"
+      }
+    ]
+  },
+  {
+    "id": "sweatshirts-after-hours-schwarz",
+    "category": "sweatshirts",
+    "name": "After Hours",
+    "color": "Schwarz",
+    "images": [
+      {
+        "id": "lose_front",
+        "label": "Vorderseite"
+      },
+      {
+        "id": "lose_back",
+        "label": "Rückseite"
+      },
+      {
+        "id": "model_front",
+        "label": "Vorderseite am Model"
+      },
+      {
+        "id": "model_back",
+        "label": "Rückseite am Model"
+      },
+      {
+        "id": "gefaltet_front",
+        "label": "Gefaltete Ansicht"
+      }
+    ]
+  },
+  {
+    "id": "sweatshirts-gzn-uniform-espresso",
+    "category": "sweatshirts",
+    "name": "GZN Uniform",
+    "color": "Espresso",
+    "images": [
+      {
+        "id": "lose_front",
+        "label": "Vorderseite"
+      },
+      {
+        "id": "lose_back",
+        "label": "Rückseite"
+      },
+      {
+        "id": "model_front",
+        "label": "Vorderseite am Model"
+      },
+      {
+        "id": "model_back",
+        "label": "Rückseite am Model"
+      },
+      {
+        "id": "gefaltet_front",
+        "label": "Gefaltete Ansicht"
+      }
+    ]
+  },
+  {
+    "id": "t-shirts-gzn-monogram-weiss",
+    "category": "t-shirts",
+    "name": "GZN Monogram",
+    "color": "Weiß",
+    "images": [
+      {
+        "id": "model_front",
+        "label": "Vorderseite am Model"
+      },
+      {
+        "id": "model_back",
+        "label": "Rückseite am Model"
+      },
+      {
+        "id": "gefaltet_front",
+        "label": "Gefaltete Ansicht"
+      }
+    ]
+  },
+  {
+    "id": "t-shirts-verdantia-schwarz",
+    "category": "t-shirts",
+    "name": "Verdantia",
+    "color": "Schwarz",
+    "images": [
+      {
+        "id": "lose_back",
+        "label": "Rückseite"
+      },
+      {
+        "id": "model_back",
+        "label": "Rückseite am Model"
+      },
+      {
+        "id": "gefaltet_front",
+        "label": "Gefaltete Ansicht"
+      }
+    ]
+  },
+  {
+    "id": "t-shirts-verdantia-weiss",
+    "category": "t-shirts",
+    "name": "Verdantia",
+    "color": "Weiß",
+    "images": [
+      {
+        "id": "lose_front",
+        "label": "Vorderseite"
+      },
+      {
+        "id": "lose_back",
+        "label": "Rückseite"
+      },
+      {
+        "id": "model_back",
+        "label": "Rückseite am Model"
+      },
+      {
+        "id": "gefaltet_front",
+        "label": "Gefaltete Ansicht"
+      }
+    ]
+  },
+  {
+    "id": "hosen-after-hours-schwarz",
+    "category": "hosen",
+    "name": "After Hours",
+    "color": "Schwarz",
+    "images": [
+      {
+        "id": "model_front",
+        "label": "Vorderseite am Model"
+      },
+      {
+        "id": "model_back",
+        "label": "Rückseite am Model"
+      },
+      {
+        "id": "closeup_front",
+        "label": "Detail vorne"
+      },
+      {
+        "id": "closeup_back",
+        "label": "Detail hinten"
+      }
+    ]
+  },
+  {
+    "id": "hosen-gzn-college-gruen",
+    "category": "hosen",
+    "name": "GZN College",
+    "color": "Grün",
+    "images": [
+      {
+        "id": "model_front",
+        "label": "Vorderseite am Model"
+      },
+      {
+        "id": "model_back",
+        "label": "Rückseite am Model"
+      },
+      {
+        "id": "closeup_front",
+        "label": "Detail vorne"
+      },
+      {
+        "id": "closeup_back",
+        "label": "Detail hinten"
+      }
+    ]
+  },
+  {
+    "id": "hosen-gzn-monogram-schwarz",
+    "category": "hosen",
+    "name": "GZN Monogram",
+    "color": "Schwarz",
+    "images": [
+      {
+        "id": "model_front",
+        "label": "Vorderseite am Model"
+      },
+      {
+        "id": "model_back",
+        "label": "Rückseite am Model"
+      },
+      {
+        "id": "closeup_front",
+        "label": "Detail vorne"
+      },
+      {
+        "id": "closeup_back",
+        "label": "Detail hinten"
+      }
+    ]
+  },
+  {
+    "id": "hosen-gzn-monogram-weiss",
+    "category": "hosen",
+    "name": "GZN Monogram",
+    "color": "Weiß",
+    "images": [
+      {
+        "id": "model_front",
+        "label": "Vorderseite am Model"
+      },
+      {
+        "id": "model_back",
+        "label": "Rückseite am Model"
+      },
+      {
+        "id": "closeup_front",
+        "label": "Detail vorne"
+      },
+      {
+        "id": "closeup_back",
+        "label": "Detail hinten"
+      }
+    ]
+  },
+  {
+    "id": "hosen-gzn-uniform-espresso",
+    "category": "hosen",
+    "name": "GZN Uniform",
+    "color": "Espresso",
+    "images": [
+      {
+        "id": "model_front",
+        "label": "Vorderseite am Model"
+      },
+      {
+        "id": "model_back",
+        "label": "Rückseite am Model"
+      },
+      {
+        "id": "closeup_front",
+        "label": "Detail vorne"
+      },
+      {
+        "id": "closeup_back",
+        "label": "Detail hinten"
+      }
+    ]
+  },
+  {
+    "id": "hosen-keep-building-blau",
+    "category": "hosen",
+    "name": "Keep Building",
+    "color": "Blau",
+    "images": [
+      {
+        "id": "model_front",
+        "label": "Vorderseite am Model"
+      },
+      {
+        "id": "model_back",
+        "label": "Rückseite am Model"
+      },
+      {
+        "id": "closeup_front",
+        "label": "Detail vorne"
+      },
+      {
+        "id": "closeup_back",
+        "label": "Detail hinten"
+      }
+    ]
+  },
+  {
+    "id": "hosen-not-that-deep-bordeaux",
+    "category": "hosen",
+    "name": "Not That Deep",
+    "color": "Bordeaux",
+    "images": [
+      {
+        "id": "model_front",
+        "label": "Vorderseite am Model"
+      },
+      {
+        "id": "model_back",
+        "label": "Rückseite am Model"
+      },
+      {
+        "id": "closeup_front",
+        "label": "Detail vorne"
+      },
+      {
+        "id": "closeup_back",
+        "label": "Detail hinten"
+      }
+    ]
+  },
+  {
+    "id": "hosen-shadow-schwarz",
+    "category": "hosen",
+    "name": "Shadow",
+    "color": "Schwarz",
+    "images": [
+      {
+        "id": "model_front",
+        "label": "Vorderseite am Model"
+      },
+      {
+        "id": "model_back",
+        "label": "Rückseite am Model"
+      },
+      {
+        "id": "closeup_front",
+        "label": "Detail vorne"
+      },
+      {
+        "id": "closeup_back",
+        "label": "Detail hinten"
+      }
+    ]
+  }
+]
