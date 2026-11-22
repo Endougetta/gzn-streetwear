@@ -1,4 +1,5 @@
-import { allow, day, hash, insertItem, json, keyedHash, parseItems, readBody, ready, sendMail, appsScriptMailerConfigured } from '../waitlist'
+import { allow, day, hash, insertItem, json, keyedHash, parseItems, readBody, ready, sendMail } from '../waitlist'
+import { appsScriptMailerConfigured } from '../apps-script-mailer'
 import type { Entry, Env } from '../waitlist'
 
 export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
