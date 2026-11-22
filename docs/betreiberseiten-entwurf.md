@@ -20,7 +20,7 @@ Deine Auswahl an Produkten, Farben, Größen und Mengen wird auf deinem Gerät i
 
 Wenn du eine Vormerkung absendest, verarbeiten wir deine E-Mail-Adresse, die ausgewählten Artikel sowie Zeitpunkt und Status der Vormerkung. Damit bestätigen wir deine Anfrage und können dich persönlich zu den gewünschten Artikeln kontaktieren. Die Angaben sind freiwillig und für die Bearbeitung deiner Anfrage erforderlich. Grundlage für die von dir angefragten vorvertraglichen Maßnahmen ist Art. 6 Abs. 1 Buchst. b DSGVO.
 
-Cloudflare D1 speichert die Vormerkung. Resend verarbeitet für den Versand der Bestätigungsmails deine Adresse und den Nachrichteninhalt. Der Bestätigungslink ist 48 Stunden gültig. [Tatsächliche Löschfristen oder Kriterien für unbestätigte und bestätigte Anfragen sowie Exporte ergänzen. Angaben zu Vertragspartnern, Drittlandtransfers und Garantien anhand der eingerichteten Dienste ergänzen.]
+Cloudflare D1 speichert die Vormerkung. Für den E-Mail-Versand übermittelt Cloudflare die Empfängeradresse und den Nachrichteninhalt an ein Google Apps Script, das im Gmail-Konto des Betreibers ausgeführt wird. Dazu gehören bei der Bestätigung auch Vor- und Nachname, die ausgewählten Artikel und der befristete Bestätigungslink. Das Script verwendet den Google-Dienst MailApp zum Senden und liest keine Nachrichten aus dem Gmail-Postfach. Google verarbeitet die Daten zur technischen Bereitstellung des Versanddienstes nach den eigenen Datenschutzbedingungen. Der Bestätigungslink ist 48 Stunden gültig. [Tatsächliche Löschfristen oder Kriterien für unbestätigte und bestätigte Anfragen sowie Exporte ergänzen. Angaben zu Vertragspartnern, Drittlandtransfers und Garantien anhand der eingerichteten Dienste ergänzen.]
 
 ## Freiwillige Unterstützung
 
