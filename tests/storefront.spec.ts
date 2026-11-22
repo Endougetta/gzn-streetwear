@@ -23,6 +23,8 @@ test('catalog, gallery, cart persistence and waitlist form', async ({ page }) =>
   const dialog = page.getByRole('dialog')
   await expect(dialog.getByLabel('E-Mail-Adresse')).toHaveCount(0)
   await dialog.getByRole('button', { name: 'Zur Vormerkung' }).click()
+  await dialog.getByLabel('Vorname', { exact: true }).fill('Lina')
+  await dialog.getByLabel('Nachname').fill('Beispiel')
   await dialog.getByLabel('E-Mail-Adresse').fill('browser-test@example.com')
   const submission = page.waitForRequest(request => request.url().endsWith('/api/waitlist') && request.method() === 'POST')
   await dialog.getByRole('button', { name: 'Vormerkung absenden' }).click()
@@ -41,7 +43,7 @@ test('D1 persistence, idempotency, confirmation and protected export', async ({ 
   const headers = { Origin: origin }
   const authorization = { Authorization: 'Bearer gzn-test-only-admin-0123456789abcdef' }
   const data = {
-    email: 'api-test@example.com', requestId: randomUUID(),
+    firstName: 'Lina', lastName: 'Beispiel', email: 'api-test@example.com', requestId: randomUUID(),
     items: [{ productId: 'hoodies-shadow-schwarz', size: 'M', quantity: 1 }],
   }
   const base = '/api/waitlist'
@@ -58,6 +60,7 @@ test('D1 persistence, idempotency, confirmation and protected export', async ({ 
   expect((await request.post('/api/confirm', { data: { token }, headers })).status()).toBe(200)
   expect((await request.patch('/api/admin?id=' + data.requestId, { headers: authorization })).status()).toBe(200)
   const csv = await (await request.get('/api/admin', { headers: authorization })).text()
+  expect(csv).toContain('"Lina","Beispiel","api-test@example.com"')
   expect(csv.split('\r\n').filter(line => line.includes(data.email))).toHaveLength(1)
   expect(csv).toContain('"Shadow","Schwarz","M","1"')
 })
@@ -119,6 +122,8 @@ test('standalone review opens from disk and completes a test reservation offline
   await page.getByRole('radio', { name: 'M', exact: true }).check()
   await page.getByRole('button', { name: 'Zur Auswahl hinzufügen' }).click()
   await page.getByRole('button', { name: 'Zur Vormerkung' }).click()
+  await page.getByLabel('Vorname', { exact: true }).fill('Lina')
+  await page.getByLabel('Nachname').fill('Beispiel')
   await page.getByLabel('E-Mail-Adresse').fill('vorschau@example.com')
   await page.getByRole('button', { name: 'Vormerkung absenden' }).click()
   await expect(page.getByRole('dialog').getByRole('status')).toContainText('Testvormerkung abgeschlossen')
