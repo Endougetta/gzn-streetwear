@@ -1,9 +1,11 @@
 import { gmailConfigured, sendGmail } from './gmail'
 import type { GmailConfig } from './gmail'
+import { appsScriptMailerConfigured, sendAppsScriptMail } from './apps-script-mailer'
+import type { AppsScriptMailConfig } from './apps-script-mailer'
 import { isLine, lineKey, maxLines, productById } from '../src/catalog'
 import type { Line } from '../src/catalog'
 
-export type Env = GmailConfig & {
+export type Env = GmailConfig & AppsScriptMailConfig & {
   DB: D1Database
   SITE_URL?: string
   TOKEN_SECRET?: string
@@ -83,7 +85,7 @@ export function localMail(env: Env) {
 
 export function ready(env: Env) {
   return Boolean(env.DB && env.SITE_URL && env.TOKEN_SECRET && env.TOKEN_SECRET.length >= 32
-    && (localMail(env) || (env.WAITLIST_ENABLED === '1' && (gmailConfigured(env) || env.RESEND_API_KEY) && env.MAIL_FROM && env.OWNER_EMAIL &&
+    && (localMail(env) || (env.WAITLIST_ENABLED === '1' && (gmailConfigured(env) || appsScriptMailerConfigured(env) || env.RESEND_API_KEY) && env.MAIL_FROM && env.OWNER_EMAIL &&
       new URL(env.SITE_URL).protocol === 'https:')))
 }
 
@@ -148,6 +150,7 @@ export async function sendMail(env: Env, entry: Entry, type: 'verify' | 'confirm
         text: (type === 'owner' ? ['Neue bestätigte Vormerkung', entry.first_name, entry.last_name, entry.email].filter(Boolean).join('\n') : text) + '\n\nDeine Auswahl:\n' + summary + '\n\nVormerknummer: ' + entry.id,
     }
     if (gmailConfigured(env)) return await sendGmail(env, message, type + '-' + entry.id)
+    if (appsScriptMailerConfigured(env)) return await sendAppsScriptMail(env, message)
     const response = await fetch('https://api.resend.com/emails', {
       method: 'POST',
       headers: {
