@@ -20,6 +20,12 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
        WHERE token_hash = ? AND expires_at > ? RETURNING *`,
     ).bind(now, tokenHash, now).first<Entry>()
     if (!entry) return json(404, 'Dieser Bestätigungslink ist ungültig oder abgelaufen.')
+    if (!entry.owner_notified_at) {
+      if (!await sendMail(env, entry, 'owner')) {
+        return json(503, 'Deine Vormerkung ist gespeichert. Bitte klicke erneut, um die Benachrichtigung abzuschließen.')
+      }
+      await env.DB.prepare('UPDATE waitlist_entries SET owner_notified_at = ? WHERE id = ?').bind(now, entry.id).run()
+    }
     if (!entry.confirmation_sent_at) {
       if (!await sendMail(env, entry, 'confirmed')) {
         return json(503, 'Deine Vormerkung ist gespeichert und bestätigt. Der Mailversand ist gerade fehlgeschlagen. Klicke erneut, um die Bestätigungsmail anzufordern.')
