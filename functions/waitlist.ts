@@ -1,7 +1,9 @@
+import { gmailConfigured, sendGmail } from './gmail'
+import type { GmailConfig } from './gmail'
 import { isLine, lineKey, maxLines, productById } from '../src/catalog'
 import type { Line } from '../src/catalog'
 
-export type Env = {
+export type Env = GmailConfig & {
   DB: D1Database
   SITE_URL?: string
   TOKEN_SECRET?: string
@@ -81,7 +83,7 @@ export function localMail(env: Env) {
 
 export function ready(env: Env) {
   return Boolean(env.DB && env.SITE_URL && env.TOKEN_SECRET && env.TOKEN_SECRET.length >= 32
-    && (localMail(env) || (env.WAITLIST_ENABLED === '1' && env.RESEND_API_KEY && env.MAIL_FROM && env.OWNER_EMAIL &&
+    && (localMail(env) || (env.WAITLIST_ENABLED === '1' && (gmailConfigured(env) || env.RESEND_API_KEY) && env.MAIL_FROM && env.OWNER_EMAIL &&
       new URL(env.SITE_URL).protocol === 'https:')))
 }
 
@@ -139,6 +141,13 @@ export async function sendMail(env: Env, entry: Entry, type: 'verify' | 'confirm
 <tr><td style="padding:16px 24px"><table width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse"><caption style="text-align:left;font-size:18px;font-weight:bold;padding-bottom:12px">Deine Auswahl</caption><thead><tr bgcolor="#eef2f5"><th align="left" style="padding:10px">Artikel</th><th align="right" style="padding:10px">Menge</th></tr></thead><tbody>${items.results.map(item => '<tr><td style="padding:14px 10px;border-bottom:1px solid #d8dde0"><strong>' + escapeHtml(item.product_name) + '</strong><br><span style="color:#505d67;font-size:13px">' + escapeHtml(item.color) + ' · Größe ' + escapeHtml(item.size) + '</span></td><td align="right" style="padding:10px;border-bottom:1px solid #d8dde0">' + item.quantity + '</td></tr>').join('')}</tbody></table></td></tr>
 <tr><td style="padding:8px 24px 24px"><p>Danke, dass du beim ersten Drop dabei bist.<br><strong>Imad von GZN</strong></p><p style="color:#505d67;font-size:12px;overflow-wrap:anywhere">Vormerknummer<br>${escapeHtml(entry.id)}</p></td></tr></table></td></tr></table>`
   try {
+    const message = {
+        from: env.MAIL_FROM!, to: [type === 'owner' ? env.OWNER_EMAIL! : entry.email], reply_to: type === 'owner' ? entry.email : env.MAIL_REPLY_TO,
+        subject: type === 'owner' ? 'GZN · Neue bestätigte Vormerkung' : type === 'verify' ? 'GZN · Vormerkung bestätigen' : 'GZN · Deine Vormerkung ist bestätigt',
+        html: type === 'owner' ? undefined : html,
+        text: (type === 'owner' ? ['Neue bestätigte Vormerkung', entry.first_name, entry.last_name, entry.email].filter(Boolean).join('\n') : text) + '\n\nDeine Auswahl:\n' + summary + '\n\nVormerknummer: ' + entry.id,
+    }
+    if (gmailConfigured(env)) return await sendGmail(env, message, type + '-' + entry.id)
     const response = await fetch('https://api.resend.com/emails', {
       method: 'POST',
       headers: {
@@ -146,12 +155,7 @@ export async function sendMail(env: Env, entry: Entry, type: 'verify' | 'confirm
         'Content-Type': 'application/json',
         'Idempotency-Key': 'gzn/' + type + '/' + entry.id,
       },
-      body: JSON.stringify({
-        from: env.MAIL_FROM, to: [type === 'owner' ? env.OWNER_EMAIL : entry.email], reply_to: type === 'owner' ? entry.email : env.MAIL_REPLY_TO,
-        subject: type === 'owner' ? 'GZN · Neue bestätigte Vormerkung' : type === 'verify' ? 'GZN · Vormerkung bestätigen' : 'GZN · Deine Vormerkung ist bestätigt',
-        html: type === 'owner' ? undefined : html,
-        text: (type === 'owner' ? ['Neue bestätigte Vormerkung', entry.first_name, entry.last_name, entry.email].filter(Boolean).join('\n') : text) + '\n\nDeine Auswahl:\n' + summary + '\n\nVormerknummer: ' + entry.id,
-      }),
+      body: JSON.stringify(message),
       signal: AbortSignal.timeout(8000),
     })
     await response.body?.cancel()
