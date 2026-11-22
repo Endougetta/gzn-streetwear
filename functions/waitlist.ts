@@ -128,13 +128,12 @@ export async function sendMail(env: Env, entry: Entry, type: 'verify' | 'confirm
   const action = type === 'verify'
     ? '<p><a style="display:inline-block;padding:14px 20px;background:#161819;color:#fff;text-decoration:none;font-weight:bold" href="' + escapeHtml(link.href) + '">E-Mail-Adresse bestätigen</a></p>'
     : ''
-  const html = `<div lang="de" style="max-width:540px;margin:auto;padding:28px;font-family:Arial,sans-serif;color:#161819">
-    <p style="color:#245573;font-weight:bold;letter-spacing:3px">GZN FIRST DROP</p>
-    <h1>${title}</h1><p>${description}</p>${action}
-    <h2 style="font-size:18px">Deine Auswahl</h2>
-    <ul style="padding-left:20px;line-height:1.7">${summary.split('\n').map(line => '<li>' + escapeHtml(line) + '</li>').join('')}</ul>
-    <p style="color:#545e66;font-size:13px">Unverbindliche Vormerkung · ${escapeHtml(entry.id)}</p>
-  </div>`
+  const html = `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" bgcolor="#eff1f2" lang="de" style="font-family:Arial,Helvetica,sans-serif;color:#171b20"><tr><td align="center" style="padding:24px 8px">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" bgcolor="#ffffff" style="max-width:560px;border:1px solid #d8dde0">
+<tr><td bgcolor="#18242e" style="padding:24px;color:#ffffff"><strong style="font-size:38px;letter-spacing:-3px">GZN<span style="color:#9bbbd0">.</span></strong><span style="float:right;font-size:11px;letter-spacing:2px;padding-top:16px">FIRST DROP</span></td></tr>
+<tr><td style="padding:28px 24px 8px"><p style="margin:0 0 10px;color:#742e43;font-size:12px;font-weight:bold;letter-spacing:1.5px">UNVERBINDLICHE VORMERKUNG</p><h1 style="margin:0 0 12px;font-size:29px;line-height:1.12">${title}</h1><p style="margin:0;line-height:1.6">${description}</p>${action}</td></tr>
+<tr><td style="padding:16px 24px"><table width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse"><caption style="text-align:left;font-size:18px;font-weight:bold;padding-bottom:12px">Deine Auswahl</caption><thead><tr bgcolor="#eef2f5"><th align="left" style="padding:10px">Artikel</th><th align="right" style="padding:10px">Menge</th></tr></thead><tbody>${items.results.map(item => '<tr><td style="padding:14px 10px;border-bottom:1px solid #d8dde0"><strong>' + escapeHtml(item.product_name) + '</strong><br><span style="color:#505d67;font-size:13px">' + escapeHtml(item.color) + ' · Größe ' + escapeHtml(item.size) + '</span></td><td align="right" style="padding:10px;border-bottom:1px solid #d8dde0">' + item.quantity + '</td></tr>').join('')}</tbody></table></td></tr>
+<tr><td style="padding:8px 24px 24px"><p>Danke, dass du beim ersten Drop dabei bist.<br><strong>Imad von GZN</strong></p><p style="color:#505d67;font-size:12px;overflow-wrap:anywhere">Vormerknummer<br>${escapeHtml(entry.id)}</p></td></tr></table></td></tr></table>`
   try {
     const response = await fetch('https://api.resend.com/emails', {
       method: 'POST',
