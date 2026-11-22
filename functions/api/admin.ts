@@ -20,7 +20,7 @@ function cell(value: unknown) {
 
 export const onRequestGet: PagesFunction<Env> = async ({ request, env }) => {
   if (!await authorized(request, env)) return json(404, 'Seite nicht gefunden.')
-  const sql = `SELECT e.id, e.email, e.confirmed_at, e.contacted_at, i.product_name, i.color, i.size, i.quantity
+  const sql = `SELECT e.id, e.first_name, e.last_name, e.email, e.confirmed_at, e.contacted_at, i.product_name, i.color, i.size, i.quantity
     FROM waitlist_entries e JOIN waitlist_items i ON i.entry_id = e.id
     WHERE e.confirmed_at IS NOT NULL AND e.id > ?
     ORDER BY e.id, i.product_id, i.size LIMIT 3000`
@@ -32,7 +32,7 @@ export const onRequestGet: PagesFunction<Env> = async ({ request, env }) => {
     while (results.at(-1)?.id === lastId) results.pop()
     cursor = String(results.at(-1)!.id)
   }
-  const columns = ['id', 'email', 'confirmed_at', 'contacted_at', 'product_name', 'color', 'size', 'quantity']
+  const columns = ['id', 'first_name', 'last_name', 'email', 'confirmed_at', 'contacted_at', 'product_name', 'color', 'size', 'quantity']
   const csv = [columns.join(','), ...results.map(row => columns.map(column => cell(row[column])).join(','))].join('\r\n')
   const headers = new Headers({
     'Content-Type': 'text/csv; charset=utf-8',
