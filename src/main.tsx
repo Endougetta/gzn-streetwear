@@ -8,6 +8,7 @@ import './style.css'
 
 const isReviewPreview = isOfflineReview || import.meta.env.VITE_HOSTED_REVIEW === '1'
 
+const waitlistPaused = import.meta.env.VITE_WAITLIST_PAUSED === '1'
 const supportUrl = import.meta.env.VITE_SUPPORT_URL || 'https://www.gofundme.com/f/gzn-mode-brand'
 const cartKey = 'gzn-selection-v1'
 
@@ -287,7 +288,8 @@ function Cart({ lines, update, dialog }: { lines: Line[]; update: (line: Line) =
             </div>
           </li>
         })}</ul> : <p>Deine Auswahl ist noch leer.</p>}
-        {lines.length > 0 && phase === 'selection' && <button className="button full" onClick={() => { setPhase('submit'); requestAnimationFrame(() => review.current?.focus()) }}>Zur Vormerkung</button>}
+        {lines.length > 0 && phase === 'selection' && waitlistPaused && <p role="status">Deine Auswahl ist auf diesem Gerät gespeichert. Die Warteliste öffnet demnächst.</p>}
+        {lines.length > 0 && phase === 'selection' && !waitlistPaused && <button className="button full" onClick={() => { setPhase('submit'); requestAnimationFrame(() => review.current?.focus()) }}>Zur Vormerkung</button>}
         {lines.length > 0 && phase === 'submit' && <form className="checkout" onSubmit={submit}>
           <h3>Unverbindlich vormerken</h3>
           <p>Wir melden uns persönlich, wenn wir deine Auswahl anbieten können.</p>
