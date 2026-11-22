@@ -209,3 +209,8 @@ select, input[type=email] { border: 1px solid #9ba5ab; background: white; color:
   .card .product-meta { transition: border-color 220ms ease; }
   .card:hover .product-meta { border-color: var(--burgundy); }
 }
+
+.outfit-recommendation { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 14px; margin-top: 10px; padding: 12px; background: #f2f4f5; }
+.outfit-recommendation p, .outfit-note { margin: 0; color: var(--muted); font-size: 14px; line-height: 1.4; }
+.outfit-recommendation strong { color: var(--ink); }
+.outfit-add { min-height: 40px; padding: 8px 13px; white-space: nowrap; }
