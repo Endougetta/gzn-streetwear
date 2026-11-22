@@ -4,6 +4,7 @@ set -euo pipefail
 : "${GZN_PRODUCTION_DB_ID:?Set the UUID of the production D1 database}"
 : "${VITE_IMPRINT_URL:?Set the published imprint URL}"
 : "${VITE_PRIVACY_URL:?Set the published privacy URL}"
+: "${OWNER_EMAIL:?Set the recipient for confirmed reservations}"
 : "${MAIL_FROM:?Set the verified sender}"
 if [[ ! "$GZN_PRODUCTION_DB_ID" =~ ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$ || "$GZN_PRODUCTION_DB_ID" == "00000000-0000-4000-8000-000000000001" ]]; then
   echo "A real production D1 UUID is required." >&2
@@ -25,6 +26,7 @@ const config = {
   }],
   vars: {
     SITE_URL: 'https://gzn-streetwear.pages.dev',
+    OWNER_EMAIL: process.env.OWNER_EMAIL,
     MAIL_FROM: process.env.MAIL_FROM,
     WAITLIST_ENABLED: '1'
   }
