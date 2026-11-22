@@ -248,12 +248,15 @@ function Cart({ lines, update, dialog }: { lines: Line[]; update: (line: Line) =
     }
     setPending(true)
     setMessage('')
-    const signature = JSON.stringify([email.trim().toLowerCase(), lines])
+    const form = new FormData(event.currentTarget)
+    const firstName = String(form.get('firstName') ?? '').trim()
+    const lastName = String(form.get('lastName') ?? '').trim()
+    const signature = JSON.stringify([email.trim().toLowerCase(), firstName, lastName, lines])
     if (attempt.current.signature !== signature) attempt.current = { signature, key: crypto.randomUUID() }
     try {
       const response = await fetch('/api/waitlist', {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, items: lines, requestId: attempt.current.key, company: new FormData(event.currentTarget).get('company') }),
+        body: JSON.stringify({ email, firstName, lastName, items: lines, requestId: attempt.current.key, company: form.get('company') }),
       })
       const payload = await response.json() as { message?: string }
       if (!response.ok) {
@@ -294,6 +297,8 @@ function Cart({ lines, update, dialog }: { lines: Line[]; update: (line: Line) =
           <h3>Unverbindlich vormerken</h3>
           <p>Wir melden uns persönlich, wenn wir deine Auswahl anbieten können.</p>
           {import.meta.env.VITE_PRIVACY_URL && <a href={import.meta.env.VITE_PRIVACY_URL}>Datenschutzhinweise zur Vormerkung</a>}
+          <label>Vorname<input name="firstName" autoComplete="given-name" maxLength={80} required disabled={pending} /></label>
+          <label>Nachname<input name="lastName" autoComplete="family-name" maxLength={80} required disabled={pending} /></label>
           <label>E-Mail-Adresse<input ref={review} type="email" autoComplete="email" maxLength={254} required value={email} onChange={event => setEmail(event.target.value)} disabled={pending} /></label>
           <div className="trap" aria-hidden="true"><label>Unternehmen<input name="company" tabIndex={-1} autoComplete="off" /></label></div>
           <button className="button full" disabled={pending}>{pending ? 'Wird gesendet …' : 'Vormerkung absenden'}</button>
