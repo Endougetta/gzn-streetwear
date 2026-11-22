@@ -229,7 +229,29 @@ function ProductDetail({ product, add }: { product: Product; add: (line: Line) =
   </div>
 }
 
-function Cart({ lines, update, dialog }: { lines: Line[]; update: (line: Line) => void; dialog: React.RefObject<HTMLDialogElement | null> }) {
+const outfitPairs: Record<string, string> = {
+  'hoodies-shadow-schwarz': 'hosen-shadow-schwarz',
+  'hosen-shadow-schwarz': 'hoodies-shadow-schwarz',
+  'hoodies-not-that-deep-bordeaux': 'hosen-not-that-deep-bordeaux',
+  'hosen-not-that-deep-bordeaux': 'hoodies-not-that-deep-bordeaux',
+  'hoodies-keep-building-blau': 'hosen-keep-building-blau',
+  'hosen-keep-building-blau': 'hoodies-keep-building-blau',
+  'sweatshirts-gzn-college-gruen': 'hosen-gzn-college-gruen',
+  'hosen-gzn-college-gruen': 'sweatshirts-gzn-college-gruen',
+  'sweatshirts-after-hours-schwarz': 'hosen-after-hours-schwarz',
+  'hosen-after-hours-schwarz': 'sweatshirts-after-hours-schwarz',
+  'sweatshirts-gzn-uniform-espresso': 'hosen-gzn-uniform-espresso',
+  'hosen-gzn-uniform-espresso': 'sweatshirts-gzn-uniform-espresso',
+  't-shirts-gzn-monogram-weiss': 'hosen-gzn-monogram-weiss',
+  'hosen-gzn-monogram-weiss': 't-shirts-gzn-monogram-weiss',
+}
+
+function Cart({ lines, update, addRecommendation, dialog }: {
+  lines: Line[]
+  update: (line: Line) => void
+  addRecommendation: (line: Line) => boolean
+  dialog: React.RefObject<HTMLDialogElement | null>
+}) {
   const [email, setEmail] = useState('')
   const [phase, setPhase] = useState<'selection' | 'submit' | 'done'>('selection')
   const [pending, setPending] = useState(false)
@@ -281,6 +303,11 @@ function Cart({ lines, update, dialog }: { lines: Line[]; update: (line: Line) =
       : <div className="drawer-content">
         {lines.length ? <ul className="cart-lines">{lines.map(line => {
           const product = productById.get(line.productId)!
+          const recommended = productById.get(outfitPairs[line.productId] ?? '')
+          const recommendedLine = recommended ? { productId: recommended.id, size: line.size, quantity: 1 } : null
+          const alreadySelected = recommendedLine !== null && lines.some(item => lineKey(item) === lineKey(recommendedLine))
+          const recommendationUnavailable = recommendedLine !== null && !alreadySelected &&
+            (lines.length >= maxLines || (lines.find(item => lineKey(item) === lineKey(recommendedLine))?.quantity ?? 0) >= maxQuantity)
           return <li key={lineKey(line)}>
             <Photo product={product} view={cardViews(product).front} alt="" sizes="75px" />
             <div><strong>{product.name}</strong><p>{product.color} · {line.size}</p>
@@ -288,6 +315,14 @@ function Cart({ lines, update, dialog }: { lines: Line[]; update: (line: Line) =
                 {Array.from({ length: maxQuantity }, (_, index) => <option key={index}>{index + 1}</option>)}
               </select></label>
               <button type="button" className="text-button" disabled={pending} onClick={() => update({ ...line, quantity: 0 })}>Entfernen</button>
+              {recommendedLine && recommended && (alreadySelected
+                ? <p className="outfit-note">Passend dazu: {recommended.name} · {recommended.color} · Größe {line.size} ist schon dabei.</p>
+                : <div className="outfit-recommendation">
+                  <p><strong>Passt dazu</strong><br />{recommended.name} · {recommended.color} · Größe {line.size}</p>
+                  <button type="button" className="button button-outline outfit-add" disabled={pending || recommendationUnavailable}
+                    aria-label={recommended.name + ' ' + recommended.color + ' in Größe ' + line.size + ' hinzufügen'}
+                    onClick={() => addRecommendation(recommendedLine)}>+ Hinzufügen</button>
+                </div>)}
             </div>
           </li>
         })}</ul> : <p>Deine Auswahl ist noch leer.</p>}
@@ -364,12 +399,12 @@ function App() {
     })
   }
 
-  function add(line: Line) {
+  function add(line: Line, openCart = true) {
     const previous = lines.find(item => lineKey(item) === lineKey(line))
     const combined = { ...line, quantity: (previous?.quantity ?? 0) + line.quantity }
     if (!isLine(combined) || (!previous && lines.length >= maxLines)) return false
     update(combined)
-    cart.current?.showModal()
+    if (openCart) cart.current?.showModal()
     return true
   }
 
@@ -394,7 +429,7 @@ function App() {
         {supportUrl && <a href={supportUrl} target="_blank" rel="noopener noreferrer">GZN freiwillig unterstützen ↗</a>}
       </nav>
     </footer>
-    <Cart lines={lines} update={update} dialog={cart} />
+    <Cart lines={lines} update={update} addRecommendation={line => add(line, false)} dialog={cart} />
   </>
 }
 const Router = isOfflineReview ? MemoryRouter : BrowserRouter
