@@ -102,7 +102,7 @@ function Home() {
         <p className="intro">The first drop starts here.</p>
         <div className="hero-actions">
           <a className="button" href="#hoodies">Zu den Hoodies <span aria-hidden="true">↓</span></a>
-          <a className="button button-outline" href="#funding">Den ersten Drop unterstützen</a>
+          <a className="button button-outline" href={supportUrl} target="_blank" rel="noopener noreferrer">Den ersten Drop unterstützen</a>
         </div>
       </div>
       <CampaignCarousel />
