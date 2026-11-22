@@ -6,6 +6,7 @@ export type Env = {
   SITE_URL?: string
   TOKEN_SECRET?: string
   RESEND_API_KEY?: string
+  OWNER_EMAIL?: string
   MAIL_FROM?: string
   MAIL_REPLY_TO?: string
   ADMIN_TOKEN?: string
@@ -15,6 +16,9 @@ export type Env = {
 
 export type Entry = {
   id: string
+  first_name: string | null
+  last_name: string | null
+  owner_notified_at: number | null
   email: string
   fingerprint: string
   expires_at: number
@@ -77,7 +81,7 @@ export function localMail(env: Env) {
 
 export function ready(env: Env) {
   return Boolean(env.DB && env.SITE_URL && env.TOKEN_SECRET && env.TOKEN_SECRET.length >= 32
-    && (localMail(env) || (env.WAITLIST_ENABLED === '1' && env.RESEND_API_KEY && env.MAIL_FROM &&
+    && (localMail(env) || (env.WAITLIST_ENABLED === '1' && env.RESEND_API_KEY && env.MAIL_FROM && env.OWNER_EMAIL &&
       new URL(env.SITE_URL).protocol === 'https:')))
 }
 
@@ -110,7 +114,7 @@ function escapeHtml(value: string) {
     .replaceAll('"', '&quot;').replaceAll("'", '&#39;')
 }
 
-export async function sendMail(env: Env, entry: Entry, type: 'verify' | 'confirmed', token?: string) {
+export async function sendMail(env: Env, entry: Entry, type: 'verify' | 'confirmed' | 'owner', token?: string) {
   if (localMail(env)) return true
   const items = await env.DB.prepare(
     'SELECT product_name, color, size, quantity FROM waitlist_items WHERE entry_id = ? ORDER BY product_id, size',
@@ -143,10 +147,10 @@ export async function sendMail(env: Env, entry: Entry, type: 'verify' | 'confirm
         'Idempotency-Key': 'gzn/' + type + '/' + entry.id,
       },
       body: JSON.stringify({
-        from: env.MAIL_FROM, to: [entry.email], reply_to: env.MAIL_REPLY_TO,
-        subject: type === 'verify' ? 'GZN · Vormerkung bestätigen' : 'GZN · Deine Vormerkung ist bestätigt',
-        html,
-        text: text + '\n\nDeine Auswahl:\n' + summary + '\n\nVormerknummer: ' + entry.id,
+        from: env.MAIL_FROM, to: [type === 'owner' ? env.OWNER_EMAIL : entry.email], reply_to: type === 'owner' ? entry.email : env.MAIL_REPLY_TO,
+        subject: type === 'owner' ? 'GZN · Neue bestätigte Vormerkung' : type === 'verify' ? 'GZN · Vormerkung bestätigen' : 'GZN · Deine Vormerkung ist bestätigt',
+        html: type === 'owner' ? undefined : html,
+        text: (type === 'owner' ? ['Neue bestätigte Vormerkung', entry.first_name, entry.last_name, entry.email].filter(Boolean).join('\n') : text) + '\n\nDeine Auswahl:\n' + summary + '\n\nVormerknummer: ' + entry.id,
       }),
       signal: AbortSignal.timeout(8000),
     })

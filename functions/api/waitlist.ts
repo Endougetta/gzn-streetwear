@@ -6,6 +6,12 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
 
   const body = await readBody(request, env)
   const email = typeof body?.email === 'string' ? body.email.trim().toLowerCase() : ''
+  const cleanName = (value: unknown) => typeof value === 'string' ? value.trim().normalize('NFC') : ''
+  const firstName = cleanName(body?.firstName)
+  const lastName = cleanName(body?.lastName)
+  if (![firstName, lastName].every(name => name.length > 0 && name.length <= 80 && !/[\u0000-\u001f\u007f]/u.test(name))) {
+    return json(400, 'Bitte überprüfe deinen Vor- und Nachnamen.')
+  }
   const id = body?.requestId
   const items = parseItems(body?.items)
   if (!items || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || email.length > 254 ||
@@ -14,7 +20,7 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
   }
 
   const secret = env.TOKEN_SECRET!
-  const fingerprint = await keyedHash(secret, JSON.stringify([email, items]))
+  const fingerprint = await keyedHash(secret, JSON.stringify([email, firstName, lastName, items]))
   const now = Date.now()
 
   try {
@@ -32,8 +38,8 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
       const token = await keyedHash(secret, 'verification/' + id)
       await env.DB.batch([
         env.DB.prepare(
-          'INSERT OR IGNORE INTO waitlist_entries (id, email, fingerprint, token_hash, created_at, expires_at) VALUES (?, ?, ?, ?, ?, ?)',
-        ).bind(id, email, fingerprint, await hash(token), now, now + 2 * day),
+          'INSERT OR IGNORE INTO waitlist_entries (id, email, first_name, last_name, fingerprint, token_hash, created_at, expires_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+        ).bind(id, email, firstName, lastName, fingerprint, await hash(token), now, now + 2 * day),
         ...items.map(item => insertItem(env.DB, id, fingerprint, item)),
       ])
       entry = await lookup()
