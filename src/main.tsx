@@ -110,7 +110,7 @@ function Home() {
       <div className="collection-heading"><h2>{category.label}</h2></div>
       <div className="products">{products.filter(product => product.category === category.id).map(product => {
         const { front, back } = cardViews(product)
-        return <Link key={product.id} to={'/produkt/' + product.id} className={front === 'gefaltet_front' ? 'card card--folded' : 'card'}>
+        return <Link key={product.id} to={'/produkt/' + product.id} data-product={product.id} className={front === 'gefaltet_front' ? 'card card--folded' : 'card'}>
           <div className="card-image">
             <div className="card-photos">
               <Photo product={product} view={front} alt="" />
@@ -129,7 +129,7 @@ function Home() {
       <h2 id="funding-title">Der erste Druck kommt von mir.</h2>
       <div><p>Ich bin Imad. Zum Start mache ich bei GZN alles selbst. Gerade will ich sehen, wie meine Motive auf echtem Stoff wirken. Mit deiner Unterstützung kann ich Musterteile besorgen und die ersten Testmotive drucken.</p>
       <p>Wenn genug zusammenkommt, suche ich einen Hersteller für den nächsten Schritt. Du kannst dir jedes Teil unabhängig davon frei vormerken.</p>
-      {supportUrl ? <a className="button" href={supportUrl} target="_blank" rel="noopener noreferrer">Testdrucke auf GoFundMe unterstützen ↗</a> : <p>Der Link zur GoFundMe-Kampagne folgt.</p>}</div>
+      {supportUrl ? <a className="button" href={supportUrl} target="_blank" rel="noopener noreferrer">Testdrucke auf GoFundMe unterstützen ↗</a> : null}</div>
     </section>
   </>
 }
@@ -374,7 +374,6 @@ function App() {
       <button className="bag" type="button" onClick={() => cart.current?.showModal()}>Auswahl <span>{count}</span></button>
     </header>
     <main id="main" ref={main} tabIndex={-1}>
-      {isReviewPreview && <p className="review-note">Shop-Vorschau · Vormerkung im Testmodus</p>}
       <Routes>
       <Route path="/" element={<Home />} />
       <Route path="/produkt/:id" element={<ProductPage add={add} />} />
