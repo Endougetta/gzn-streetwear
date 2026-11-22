@@ -109,7 +109,7 @@ test('campaign image loads and product cards zoom before the rear image fades in
 test('standalone review opens from disk and completes a test reservation offline', async ({ page, context }) => {
   await context.setOffline(true)
   await page.goto(pathToFileURL(resolve('review/GZN_Shop_Vorschau.html')).href)
-  await expect(page.getByText('Vormerkung im Testmodus', { exact: false })).toBeVisible()
+  await expect(page.getByText('Vormerkung im Testmodus', { exact: false })).toHaveCount(0)
   await expect(page.locator('.card')).toHaveCount(17)
   await expect.poll(() => page.locator('.hero-slide--active').evaluate(image => (image as HTMLImageElement).naturalWidth)).toBeGreaterThan(0)
 
