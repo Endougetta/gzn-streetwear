@@ -8,7 +8,7 @@ import './style.css'
 
 const isReviewPreview = isOfflineReview || import.meta.env.VITE_HOSTED_REVIEW === '1'
 
-const supportUrl = import.meta.env.VITE_SUPPORT_URL
+const supportUrl = import.meta.env.VITE_SUPPORT_URL || 'https://www.gofundme.com/f/gzn-mode-brand'
 const cartKey = 'gzn-selection-v1'
 
 function restoreCart(): Line[] {
