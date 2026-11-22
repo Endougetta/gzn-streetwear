@@ -1,10 +1,12 @@
 import { useEffect, useRef, useState } from 'react'
 import type { FormEvent } from 'react'
 import { createRoot } from 'react-dom/client'
-import { BrowserRouter, Link, Route, Routes, useLocation, useParams } from 'react-router-dom'
-import { cardViews, categories, isLine, lineKey, maxLines, maxQuantity, photo, productById, products, sizes } from './catalog'
+import { BrowserRouter, Link, MemoryRouter, Route, Routes, useLocation, useParams } from 'react-router-dom'
+import { assetUrl, cardViews, categories, galleryViews, isLine, isOfflineReview, lineKey, maxLines, maxQuantity, photo, productById, products, sizes } from './catalog'
 import type { Line, Product } from './catalog'
 import './style.css'
+
+const isReviewPreview = isOfflineReview || import.meta.env.VITE_HOSTED_REVIEW === '1'
 
 const supportUrl = import.meta.env.VITE_SUPPORT_URL
 const cartKey = 'gzn-selection-v1'
@@ -20,7 +22,74 @@ function restoreCart(): Line[] {
 
 function Photo({ product, view, alt, eager = false, sizes: displaySizes = '(min-width: 850px) 33vw, 50vw' }:
 { product: Product; view: string; alt: string; eager?: boolean; sizes?: string }) {
-  return <img src={photo(product, view)} srcSet={photo(product, view, 480) + ' 480w, ' + photo(product, view) + ' 1120w'} sizes={displaySizes} alt={alt} loading={eager ? 'eager' : 'lazy'} decoding="async" />
+  return <img src={photo(product, view)} srcSet={isOfflineReview ? undefined : photo(product, view, 480) + ' 480w, ' + photo(product, view) + ' 1120w'} sizes={displaySizes} alt={alt} loading={eager ? 'eager' : 'lazy'} decoding="async" />
+}
+
+type CampaignLook = { name: string; image: string; productId: string }
+
+const campaignLooks: CampaignLook[] = [
+  { name: 'Keep Building · Blau', image: '/campaign/keep-building-walk.jpg', productId: 'hoodies-keep-building-blau' },
+  { name: 'Shadow · Schwarz', image: '/campaign/shadow-walk.jpg', productId: 'hoodies-shadow-schwarz' },
+  { name: 'Not That Deep · Bordeaux', image: '/campaign/not-that-deep-walk.jpg', productId: 'hoodies-not-that-deep-bordeaux' },
+]
+
+function CampaignCarousel() {
+  const [{ current, previous }, setLook] = useState({ current: 0, previous: -1 })
+  const [playing, setPlaying] = useState(() => !window.matchMedia('(prefers-reduced-motion: reduce)').matches)
+  const activeLook = campaignLooks[current]
+
+  useEffect(() => {
+    const preference = window.matchMedia('(prefers-reduced-motion: reduce)')
+    const pauseForReducedMotion = (event: MediaQueryListEvent) => { if (event.matches) setPlaying(false) }
+    preference.addEventListener('change', pauseForReducedMotion)
+    return () => preference.removeEventListener('change', pauseForReducedMotion)
+  }, [])
+
+  useEffect(() => {
+    if (!playing) return
+    let timer: number | undefined
+    function schedule() {
+      window.clearTimeout(timer)
+      if (!document.hidden) {
+        timer = window.setTimeout(() => {
+          setLook(({ current }) => ({ current: (current + 1) % campaignLooks.length, previous: current }))
+        }, 5200)
+      }
+    }
+    schedule()
+    document.addEventListener('visibilitychange', schedule)
+    return () => {
+      window.clearTimeout(timer)
+      document.removeEventListener('visibilitychange', schedule)
+    }
+  }, [current, playing])
+
+  return <div className="hero-visual" aria-label="GZN Kampagnenlooks">
+    <Link className="hero-image-link" to={'/produkt/' + activeLook.productId} aria-label={activeLook.name + ' ansehen'}>
+      {campaignLooks.map((look, index) => <img
+        key={look.image}
+        className={index === current ? 'hero-slide hero-slide--active' : index === previous ? 'hero-slide hero-slide--previous' : 'hero-slide'}
+        src={assetUrl(look.image)}
+        alt=""
+        width={1536}
+        height={1024}
+        fetchPriority={index === 0 ? 'high' : 'low'}
+      />)}
+    </Link>
+    <div className="hero-look-controls" aria-label="Kampagnenbilder wechseln">
+      {campaignLooks.map((look, index) => <button key={look.image} type="button"
+        aria-label={look.name}
+        aria-pressed={index === current}
+        onClick={() => {
+          setPlaying(false)
+          if (index !== current) setLook({ current: index, previous: current })
+        }}>
+        <span aria-hidden="true" />
+      </button>)}
+      <button type="button" aria-label={playing ? 'Kampagnenwechsel pausieren' : 'Kampagnenwechsel starten'}
+        onClick={() => setPlaying(value => !value)}>{playing ? 'Ⅱ' : '▷'}</button>
+    </div>
+  </div>
 }
 
 function Home() {
@@ -32,28 +101,23 @@ function Home() {
         <p className="intro">The first drop starts here.</p>
         <div className="hero-actions">
           <a className="button" href="#hoodies">Zu den Hoodies <span aria-hidden="true">↓</span></a>
-          {supportUrl && <a className="button button-outline" href={supportUrl} target="_blank" rel="noopener noreferrer">Support GZN ↗</a>}
+          <a className="button button-outline" href="#funding">Den ersten Drop unterstützen</a>
         </div>
       </div>
-      <div className="hero-visual">
-        <img
-          src="/campaign/first-drop.jpg"
-          width={1536}
-          height={1024}
-          alt="Imad in drei Posen mit weißen Sneakern: im weißen Monogram-Shirt mit schwarzer Hose, im bordeauxfarbenen Not That Deep Set und im blauen Keep Building Set mit sichtbarem Rückenprint."
-          fetchPriority="high"
-        />
-      </div>
+      <CampaignCarousel />
     </section>
     {categories.map(category => <section key={category.id} className="collection" id={category.id}>
       <div className="collection-heading"><h2>{category.label}</h2></div>
       <div className="products">{products.filter(product => product.category === category.id).map(product => {
         const { front, back } = cardViews(product)
-        return <Link key={product.id} to={'/produkt/' + product.id} className="card">
+        return <Link key={product.id} to={'/produkt/' + product.id} data-product={product.id} className={front === 'gefaltet_front' ? 'card card--folded' : 'card'}>
           <div className="card-image">
             <div className="card-photos">
               <Photo product={product} view={front} alt="" />
-              {back && <div className="card-back"><Photo product={product} view={back} alt="" /></div>}
+              {back && <div className="card-back">
+                <Photo product={product} view={back} alt="" />
+                <span className="card-view-label" aria-hidden="true">Rückansicht</span>
+              </div>}
             </div>
             <span className="card-arrow" aria-hidden="true">↗</span>
           </div>
@@ -61,6 +125,12 @@ function Home() {
         </Link>
       })}</div>
     </section>)}
+    <section className="funding" id="funding" aria-labelledby="funding-title">
+      <h2 id="funding-title">Der erste Druck kommt von mir.</h2>
+      <div><p>Ich bin Imad. Zum Start mache ich bei GZN alles selbst. Gerade will ich sehen, wie meine Motive auf echtem Stoff wirken. Mit deiner Unterstützung kann ich Musterteile besorgen und die ersten Testmotive drucken.</p>
+      <p>Wenn genug zusammenkommt, suche ich einen Hersteller für den nächsten Schritt. Du kannst dir jedes Teil unabhängig davon frei vormerken.</p>
+      {supportUrl ? <a className="button" href={supportUrl} target="_blank" rel="noopener noreferrer">Testdrucke auf GoFundMe unterstützen ↗</a> : null}</div>
+    </section>
   </>
 }
 
@@ -75,8 +145,37 @@ function ProductDetail({ product, add }: { product: Product; add: (line: Line) =
   const [quantity, setQuantity] = useState(1)
   const [selected, setSelected] = useState(0)
   const [error, setError] = useState('')
-  const view = product.images[selected]
-  const move = (offset: number) => setSelected(index => (index + offset + product.images.length) % product.images.length)
+  const images = galleryViews(product)
+  const count = images.length
+  const view = images[selected]
+  const [playing, setPlaying] = useState(() => !window.matchMedia('(prefers-reduced-motion: reduce)').matches)
+
+  useEffect(() => {
+    const preference = window.matchMedia('(prefers-reduced-motion: reduce)')
+    const stopForReducedMotion = (event: MediaQueryListEvent) => { if (event.matches) setPlaying(false) }
+    preference.addEventListener('change', stopForReducedMotion)
+    return () => preference.removeEventListener('change', stopForReducedMotion)
+  }, [])
+
+  useEffect(() => {
+    if (!playing || count < 2) return
+    let timer: number | undefined
+    function schedule() {
+      window.clearTimeout(timer)
+      if (!document.hidden) timer = window.setTimeout(() => setSelected(index => (index + 1) % count), 5200)
+    }
+    schedule()
+    document.addEventListener('visibilitychange', schedule)
+    return () => {
+      window.clearTimeout(timer)
+      document.removeEventListener('visibilitychange', schedule)
+    }
+  }, [count, playing, selected])
+
+  function move(offset: number) {
+    setPlaying(false)
+    setSelected(index => (index + offset + count) % count)
+  }
 
   function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
@@ -94,14 +193,17 @@ function ProductDetail({ product, add }: { product: Product; add: (line: Line) =
         }
       }}>
         <div className="gallery-stage">
-          <Photo product={product} view={view.id} alt={product.name + ' · ' + view.label} eager sizes="(min-width: 850px) 54vw, 94vw" />
+          <div className="gallery-frame" key={view.id}>
+            <Photo product={product} view={view.id} alt={product.name + ' · ' + view.label} eager sizes="(min-width: 850px) 54vw, 94vw" />
+          </div>
           <div className="gallery-controls">
             <button type="button" aria-label="Vorheriges Bild" onClick={() => move(-1)}>←</button>
-            <span aria-live="polite">{selected + 1} / {product.images.length}</span>
+            <span aria-live={playing ? 'off' : 'polite'}>{selected + 1} / {count}</span>
             <button type="button" aria-label="Nächstes Bild" onClick={() => move(1)}>→</button>
+            <button type="button" aria-label={playing ? 'Bildwechsel pausieren' : 'Bildwechsel starten'} onClick={() => setPlaying(value => !value)}>{playing ? 'Ⅱ' : '▷'}</button>
           </div>
         </div>
-        <div className="thumbnails">{product.images.map((image, index) => <button type="button" key={image.id} aria-label={image.label} aria-pressed={index === selected} onClick={() => setSelected(index)}>
+        <div className="thumbnails">{images.map((image, index) => <button type="button" key={image.id} aria-label={image.label} aria-pressed={index === selected} onClick={() => { setPlaying(false); setSelected(index) }}>
           <Photo product={product} view={image.id} alt="" sizes="80px" />
         </button>)}</div>
       </section>
@@ -137,6 +239,12 @@ function Cart({ lines, update, dialog }: { lines: Line[]; update: (line: Line) =
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
     if (pending || !lines.length) return
+    if (isReviewPreview) {
+      lines.forEach(line => update({ ...line, quantity: 0 }))
+      setPhase('done')
+      setEmail('')
+      return
+    }
     setPending(true)
     setMessage('')
     const signature = JSON.stringify([email.trim().toLowerCase(), lines])
@@ -165,7 +273,7 @@ function Cart({ lines, update, dialog }: { lines: Line[]; update: (line: Line) =
   return <dialog ref={dialog} className="drawer" aria-labelledby="cart-title" onClose={() => { if (!pending) { setPhase('selection'); setMessage('') } }}
     onCancel={event => { if (pending) event.preventDefault() }}>
     <header><h2 id="cart-title">Deine Auswahl</h2><button type="button" aria-label="Auswahl schließen" onClick={() => dialog.current?.close()} disabled={pending}>×</button></header>
-    {phase === 'done' ? <div className="drawer-content" role="status"><h3>Schau in dein Postfach.</h3><p>Bestätige deine E-Mail-Adresse über den Link, den wir dir geschickt haben.</p><button className="button full" onClick={() => dialog.current?.close()}>Weiterstöbern</button></div>
+    {phase === 'done' ? <div className="drawer-content" role="status"><h3>{isReviewPreview ? 'Testvormerkung abgeschlossen' : 'Schau in dein Postfach.'}</h3><p>{isReviewPreview ? 'In dieser Vorschau werden keine Daten gesendet.' : 'Bestätige deine E-Mail-Adresse über den Link, den wir dir geschickt haben.'}</p><button className="button full" onClick={() => dialog.current?.close()}>Weiterstöbern</button></div>
       : <div className="drawer-content">
         {lines.length ? <ul className="cart-lines">{lines.map(line => {
           const product = productById.get(line.productId)!
@@ -265,7 +373,8 @@ function App() {
       <nav aria-label="Hauptnavigation"><Link to="/#hoodies">Kollektion</Link></nav>
       <button className="bag" type="button" onClick={() => cart.current?.showModal()}>Auswahl <span>{count}</span></button>
     </header>
-    <main id="main" ref={main} tabIndex={-1}><Routes>
+    <main id="main" ref={main} tabIndex={-1}>
+      <Routes>
       <Route path="/" element={<Home />} />
       <Route path="/produkt/:id" element={<ProductPage add={add} />} />
       <Route path="/bestaetigen" element={<Confirm />} />
@@ -275,10 +384,11 @@ function App() {
       <nav aria-label="Footer">
         {import.meta.env.VITE_IMPRINT_URL && <a href={import.meta.env.VITE_IMPRINT_URL}>Impressum</a>}
         {import.meta.env.VITE_PRIVACY_URL && <a href={import.meta.env.VITE_PRIVACY_URL}>Datenschutz</a>}
-        {supportUrl && <a href={supportUrl} target="_blank" rel="noopener noreferrer">Support GZN ↗</a>}
+        {supportUrl && <a href={supportUrl} target="_blank" rel="noopener noreferrer">GZN freiwillig unterstützen ↗</a>}
       </nav>
     </footer>
     <Cart lines={lines} update={update} dialog={cart} />
   </>
 }
-createRoot(document.getElementById('root')!).render(<BrowserRouter><App /></BrowserRouter>)
+const Router = isOfflineReview ? MemoryRouter : BrowserRouter
+createRoot(document.getElementById('root')!).render(<Router><App /></Router>)
