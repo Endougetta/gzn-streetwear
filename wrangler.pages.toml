@@ -10,4 +10,4 @@ migrations_dir = "migrations"
 
 [vars]
 SITE_URL = "https://gzn-streetwear.pages.dev"
-WAITLIST_ENABLED = "0"
+WAITLIST_ENABLED = "1"
