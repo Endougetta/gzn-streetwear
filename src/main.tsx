@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import type { FormEvent } from 'react'
 import { createRoot } from 'react-dom/client'
 import { BrowserRouter, Link, MemoryRouter, Route, Routes, useLocation, useParams } from 'react-router-dom'
-import { assetUrl, cardViews, categories, galleryViews, isLine, isOfflineReview, lineKey, maxLines, maxQuantity, photo, productById, products, sizes } from './catalog'
+import { assetUrl, cardViews, categories, galleryViews, isLine, isOfflineReview, lineKey, maxLines, maxQuantity, photo, productById, productType, products, sizes } from './catalog'
 import type { Line, Product } from './catalog'
 import './style.css'
 
@@ -310,15 +310,15 @@ function Cart({ lines, update, addRecommendation, dialog }: {
             (lines.length >= maxLines || (lines.find(item => lineKey(item) === lineKey(recommendedLine))?.quantity ?? 0) >= maxQuantity)
           return <li key={lineKey(line)}>
             <Photo product={product} view={cardViews(product).front} alt="" sizes="75px" />
-            <div><strong>{product.name}</strong><p>{product.color} · {line.size}</p>
+            <div><strong>{productType(product.category)} · {product.name}</strong><p>{product.color} · Größe {line.size}</p>
               <label>Anzahl <select value={line.quantity} disabled={pending} onChange={event => update({ ...line, quantity: Number(event.target.value) })}>
                 {Array.from({ length: maxQuantity }, (_, index) => <option key={index}>{index + 1}</option>)}
               </select></label>
               <button type="button" className="text-button" disabled={pending} onClick={() => update({ ...line, quantity: 0 })}>Entfernen</button>
               {recommendedLine && recommended && (alreadySelected
-                ? <p className="outfit-note">Passend dazu: {recommended.name} · {recommended.color} · Größe {line.size} ist schon dabei.</p>
+                ? <p className="outfit-note">Passend dazu: {productType(recommended.category)} · {recommended.name} · {recommended.color} · Größe {line.size} ist schon dabei.</p>
                 : <div className="outfit-recommendation">
-                  <p><strong>Passt dazu</strong><br />{recommended.name} · {recommended.color} · Größe {line.size}</p>
+                  <p><strong>Passt dazu</strong><br />{productType(recommended.category)} · {recommended.name} · {recommended.color} · Größe {line.size}</p>
                   <button type="button" className="button button-outline outfit-add" disabled={pending || recommendationUnavailable}
                     aria-label={recommended.name + ' ' + recommended.color + ' in Größe ' + line.size + ' hinzufügen'}
                     onClick={() => addRecommendation(recommendedLine)}>+ Hinzufügen</button>
