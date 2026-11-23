@@ -2,7 +2,7 @@ import { gmailConfigured, sendGmail } from './gmail'
 import type { GmailConfig } from './gmail'
 import { appsScriptMailerConfigured, sendAppsScriptMail } from './apps-script-mailer'
 import type { AppsScriptMailConfig } from './apps-script-mailer'
-import { isLine, lineKey, maxLines, productById } from '../src/catalog'
+import { isLine, lineKey, maxLines, productById, productType } from '../src/catalog'
 import type { Line } from '../src/catalog'
 
 export type Env = GmailConfig & AppsScriptMailConfig & {
@@ -110,7 +110,7 @@ export function insertItem(db: D1Database, id: string, fingerprint: string, item
   return db.prepare(
     `INSERT OR IGNORE INTO waitlist_items (entry_id, product_id, product_name, color, size, quantity)
      SELECT id, ?, ?, ?, ?, ? FROM waitlist_entries WHERE id = ? AND fingerprint = ?`,
-  ).bind(item.productId, product.name, product.color, item.size, item.quantity, id, fingerprint)
+  ).bind(item.productId, productType(product.category) + ' · ' + product.name, product.color, item.size, item.quantity, id, fingerprint)
 }
 
 function escapeHtml(value: string) {
