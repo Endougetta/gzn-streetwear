@@ -1,4 +1,5 @@
 import { allow, day, hash, insertItem, json, keyedHash, parseItems, readBody, ready, sendMail } from '../waitlist'
+import { appsScriptMailerConfigured } from '../apps-script-mailer'
 import type { Entry, Env } from '../waitlist'
 
 export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
@@ -31,7 +32,7 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
       const recipient = await keyedHash(secret, email)
       if (!await allow(env.DB, 'submit/ip/' + ip, day / 24, 10) ||
           !await allow(env.DB, 'submit/mail/' + recipient, day, 4) ||
-          !await allow(env.DB, 'submit/global', day, 45)) {
+          !await allow(env.DB, 'submit/global', day, appsScriptMailerConfigured(env) ? 30 : 45)) {
         return json(429, 'Gerade sind zu viele Vormerkungen eingegangen. Versuche es später erneut.')
       }
 

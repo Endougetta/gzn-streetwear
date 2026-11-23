@@ -12,7 +12,7 @@ Die Vorschau verwendet `VITE_HOSTED_REVIEW=1` und simuliert die Vormerkung im Br
 | --- | --- | --- |
 | GitHub | Endougetta verwaltet Quellcode und Freigabe. | Repo und Vorschau-PR vorhanden. |
 | Cloudflare | GZN verwaltet Pages, Zugriffsschutz, DNS und D1. | Pages, Zugriffsschutz und EU-Test-D1 vorhanden. Die Live-Datenbank steht aus. |
-| Resend | GZN verwaltet den Absender, die Versanddomain und die Zustellung. | Konto und Absenderdomain noch zu bestätigen. |
+| Google Apps Script / MailApp | GZN verwaltet das verbundene Gmail-Konto und das Versand-Script. | Kostenloser Start ohne eigene Versanddomain; Deployment und Mail-Berechtigung noch einzurichten. |
 | Vormerkende | Gäste wählen Produkte aus und bestätigen ihre E-Mail-Adresse per Link. | V1 benötigt keine Kundenkonten. |
 | GZN-Team | Bestätigte Einträge abrufen und Interessenten persönlich kontaktieren. | CSV-Export vorhanden. Zuständigkeit und Zugriff vor dem Livegang festlegen. |
 
@@ -35,14 +35,15 @@ migrations_dir = "migrations"
 
 Quellen [Pages Git integration](https://developers.cloudflare.com/pages/configuration/git-integration/) · [Pages Bindings](https://developers.cloudflare.com/pages/functions/bindings/) · [D1 CLI](https://developers.cloudflare.com/workers/wrangler/commands/d1/) · [Pages Custom Domains](https://developers.cloudflare.com/pages/configuration/custom-domains/)
 
-## Absender und echte Zustellung
+## Kostenloser Gmail-Versand
 
-- Resend im gewünschten GZN-Konto einrichten. Ein Google-Konto kann der Anmeldung dienen. Zum Versand an die Zielgruppe eine eigene Versanddomain oder Subdomain hinterlegen, etwa `mail.<GZN-Domain>`, und die im Dashboard ausgegebenen DNS-Einträge verifizieren.
-- Einen auf die Absenderdomain beschränkten Versand-API-Key erstellen. `RESEND_API_KEY` als Runtime-Secret und `MAIL_FROM` als Absender der verifizierten Domain konfigurieren. Mit `MAIL_REPLY_TO` können Antworten an ein erreichbares Postfach weitergeleitet werden.
-- Erst nach Einrichtung aller Produktionsvoraussetzungen `WAITLIST_ENABLED=1` setzen. Mit mindestens zwei eigenen, erreichbaren Test-Postfächern Zustellung, Spam-Ordner, Bestätigungslink und Artikelliste prüfen. Ein 2xx-Status von Resend zeigt die Annahme durch die API. Die tatsächliche Zustellung wird separat im Resend-Dashboard oder im Postfach geprüft.
-- Free-Tarif bei Planung: bis zu 100 Nachrichten pro Tag und 3.000 pro Monat. Die Anwendung lässt standardmäßig je UTC-Tag 45 neue Einträge und bis zu zwei Mails je Eintrag zu. Bei Bestätigungen älterer Anfragen kann die Tagesquote trotzdem erreicht werden. Der Anbieter entscheidet dann über Annahme, der Datenbestand bleibt erhalten.
+Für den ersten kleinen Interessentenlauf kann die Website Gmail über ein Google Apps Script nutzen. Eine eigene Versanddomain und Zugriff auf das bisherige Google-Cloud-Projekt sind dafür nicht erforderlich. Das Script läuft als angemeldeter Betreiber und verwendet den send-only Dienst `MailApp`. Die Einrichtung steht in [Google Apps Script Mailversand](google-apps-script-mailer.md).
 
-Quellen [Resend-Tarife](https://resend.com/pricing) · [Domain-Verifizierung](https://resend.com/docs/dashboard/domains/introduction) · [Idempotenz](https://resend.com/docs/dashboard/emails/idempotency-keys)
+- Die Cloudflare Pages Function sendet Nachrichtendaten und den geheimen Token serverseitig an das Apps Script. Der Token ist nur in Cloudflare Secrets und den Apps-Script-Properties gespeichert.
+- Das Script liest kein Gmail-Postfach. Es versendet Bestätigung an die angegebene Adresse, Betreiberbenachrichtigungen an `OWNER_EMAIL` und Antworten an `MAIL_REPLY_TO`.
+- Google nennt für private Gmail-Konten maximal 100 Empfänger pro Tag. Der Shop begrenzt Vormerkungen bei aktivem Apps-Script-Versand auf 30 am Tag, um bei bis zu drei Nachrichten je bestätigter Vormerkung unter dem Tageskontingent zu bleiben.
+- Der D1-Eintrag wird vor dem Versand gespeichert. Ein Versandfehler löscht keine Vormerkung; die Website zeigt einen erneuten Versuch an.
+- Für höhere Mengen oder bessere Zustellbarkeit sollte später ein Anbieter mit verifizierter Versanddomain eingesetzt werden.
 
 ## Vormerkung und Export
 
