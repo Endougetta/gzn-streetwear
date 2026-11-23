@@ -9,6 +9,12 @@ export const categories = [
 
 export const products = data
 export type Product = (typeof products)[number]
+export const productType = (category: string) => ({
+  hoodies: 'Hoodie',
+  sweatshirts: 'Sweatshirt',
+  't-shirts': 'T-Shirt',
+  hosen: 'Hose',
+}[category] ?? 'Piece')
 export const productById = new Map(products.map(product => [product.id, product]))
 // Vor der Freischaltung mit den verfügbaren Größen abgleichen.
 export const sizes = ['XS', 'S', 'M', 'L', 'XL', 'XXL']
